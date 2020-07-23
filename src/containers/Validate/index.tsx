@@ -3,8 +3,17 @@ import { useLocation, useHistory } from 'react-router-dom'
 import queryString from 'query-string'
 import discordClient from '~/discordOauth'
 import axios from 'axios'
+import { connect, ConnectedProps } from 'react-redux'
+import { RootState } from '~/redux'
+import { setToken } from '~/redux/auth/actions'
 
-const Validate = () => {
+const mapStateToProps = (state: RootState) => ({ auth: state.auth })
+const mapDispatchToProps = { setToken }
+const connector = connect(mapStateToProps, mapDispatchToProps)
+type ReduxProps = ConnectedProps<typeof connector>
+type Props = ReduxProps & {}
+
+const Validate = (props: Props) => {
   const location = useLocation()
   const history = useHistory()
   useEffect(() => {
@@ -31,10 +40,11 @@ const Validate = () => {
           },
         }
       )
-      console.log('res :>> ', res)
+      console.log('props :>> ', props)
       if (res.status === 200) {
-        localStorage.setItem('accessToken', res.data.access_token)
-        localStorage.setItem('refreshToken', res.data.refresh_token)
+        // localStorage.setItem('accessToken', res.data.access_token)
+        // localStorage.setItem('refreshToken', res.data.refresh_token)
+        props.setToken(res.data.access_token, res.data.refresh_token)
         history.push('/')
       } else {
         history.push('/login')
@@ -52,4 +62,4 @@ const Validate = () => {
   )
 }
 
-export default Validate
+export default connector(Validate)

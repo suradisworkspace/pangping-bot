@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import { Button } from 'antd'
 import crypto from 'crypto'
 import DiscordOauth2 from 'discord-oauth2'
-import { useHistory } from 'react-router-dom'
 import discordClient from '~/discordOauth'
 
 const oauth = new DiscordOauth2({
@@ -37,7 +36,6 @@ const LoginTitle = styled.h1`
 `
 
 const Login = () => {
-  const history = useHistory()
   const login = () => {
     const url = oauth.generateAuthUrl({
       scope: ['identify'],
