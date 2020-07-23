@@ -1,26 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 
-function App() {
+import Login from '~/containers/Login'
+
+const isAuth = false
+
+const AuthRoute = ({ children, ...rest }: { children: React.ReactNode }) => (
+  <Route
+    {...rest}
+    render={({ location }) =>
+      isAuth ? (
+        children
+      ) : (
+        <Redirect
+          to={{
+            pathname: '/login',
+            state: { from: location },
+          }}
+        />
+      )
+    }
+  />
+)
+
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Router>
+      <Switch>
+        <Route path="/login">
+          <Login />
+        </Route>
+        <AuthRoute>
+          <Route exact path="/">
+            <div>
+              <h1>login here</h1>
+            </div>
+          </Route>
+        </AuthRoute>
+      </Switch>
+    </Router>
+  )
 }
-
-export default App;
