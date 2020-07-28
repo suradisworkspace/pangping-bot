@@ -1,5 +1,5 @@
 export default {
   clientId: '701046332835758101',
-  clientSecret: '6JjJeCS4Hu78Bd75rb3PaV0UFAvCD9fY',
+  clientSecret: 'i7PzKIwZGF1TH6XhpJ2wWkCBx4X53w5g',
   redirectUri: 'http://localhost:5000/validate',
 }
