@@ -1,1 +1,1 @@
-worker: node express.ts
+web: node express.ts
