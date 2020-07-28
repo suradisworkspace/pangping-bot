@@ -1,1 +1,1 @@
-worker: craco build && node express.ts
+worker: node express.ts
