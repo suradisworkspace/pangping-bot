@@ -29,7 +29,7 @@ const Validate = (props: Props) => {
         queryString.stringify({
           client_id: discordClient.clientId,
           client_secret: discordClient.clientSecret,
-          redirect_uri: 'http://localhost:3000/validate',
+          redirect_uri: discordClient.redirectUri,
           scope: 'identify',
           grant_type: 'authorization_code',
           code: params.code,

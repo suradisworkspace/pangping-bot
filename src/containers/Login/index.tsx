@@ -8,7 +8,7 @@ import discordClient from '~/discordOauth'
 const oauth = new DiscordOauth2({
   clientId: discordClient.clientId,
   clientSecret: discordClient.clientSecret,
-  redirectUri: 'http://localhost:3000/validate',
+  redirectUri: discordClient.redirectUri,
 })
 
 const Background = styled.div`
