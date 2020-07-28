@@ -3,7 +3,6 @@ const runMusic = require('./runMusic')
 const deleteMsg = require('../utils/deleteMsg')
 
 module.exports = async (msg, queue, serverQ, url) => {
-  console.log('url :>> ', url)
   const voiceChannel = msg.member.voice.channel
 
   // check case
