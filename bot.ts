@@ -2,6 +2,7 @@ const { token } = require('./configs.json')
 const { CommandoClient } = require('discord.js-commando')
 const Keyv = require('keyv')
 const KeyvProvider = require('commando-provider-keyv')
+const path = require('path')
 
 const queue = new Map()
 
