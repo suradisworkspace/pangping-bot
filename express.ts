@@ -1,6 +1,5 @@
 const path = require('path')
 const express = require('express')
-const { token } = require('./configs.json')
 const { CommandoClient } = require('discord.js-commando')
 const Keyv = require('keyv')
 const KeyvProvider = require('commando-provider-keyv')
@@ -51,8 +50,6 @@ client.on('ready', () => {
 
 const settings = { serialize: (data) => data, deserialize: (data) => data }
 
-client.setProvider(
-  new KeyvProvider(new Keyv('mongodb://pangping:q1w2e3r4@ds147461.mlab.com:47461/heroku_cvn3w73l', settings))
-)
+client.setProvider(new KeyvProvider(new Keyv(process.env.DB_HOST, settings)))
 
-client.login(token)
+client.login(process.env.DISCORD_TOKEN)

@@ -28,8 +28,8 @@ const Validate = (props: Props) => {
         'https://discord.com/api/oauth2/token',
         queryString.stringify({
           client_id: discordClient.clientId,
-          client_secret: discordClient.clientSecret,
-          redirect_uri: discordClient.redirectUri,
+          clientSecret: process.env.CLIENT_SECRET,
+          redirectUri: process.env.REDIRECT_URI,
           scope: 'identify',
           grant_type: 'authorization_code',
           code: params.code,

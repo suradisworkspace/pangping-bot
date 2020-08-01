@@ -1,8 +1,7 @@
 const Discord = require('discord.js')
 const ytdl = require('ytdl-core')
-const { youtubeKey } = require('../configs.json')
-const secondToTime = require('../utils/secondToTime')
-const axios = require('axios')
+// const secondToTime = require('../utils/secondToTime')
+// const axios = require('axios')
 
 const run = (queue, guild, song) => {
   const serverQ = queue.get(guild.id)

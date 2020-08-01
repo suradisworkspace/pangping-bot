@@ -7,8 +7,8 @@ import discordClient from '~/discordOauth'
 
 const oauth = new DiscordOauth2({
   clientId: discordClient.clientId,
-  clientSecret: discordClient.clientSecret,
-  redirectUri: discordClient.redirectUri,
+  clientSecret: process.env.CLIENT_SECRET,
+  redirectUri: process.env.REDIRECT_URI,
 })
 
 const Background = styled.div`
