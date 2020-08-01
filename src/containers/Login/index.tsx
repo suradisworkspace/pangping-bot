@@ -4,11 +4,12 @@ import { Button } from 'antd'
 import crypto from 'crypto'
 import DiscordOauth2 from 'discord-oauth2'
 import discordClient from '~/discordOauth'
+console.log('process.evn :>> ', process.env)
 
 const oauth = new DiscordOauth2({
   clientId: discordClient.clientId,
-  clientSecret: process.env.CLIENT_SECRET,
-  redirectUri: process.env.REDIRECT_URI,
+  clientSecret: process.env.REACT_APP_CLIENT_SECRET,
+  redirectUri: process.env.REACT_APP_REDIRECT_URI,
 })
 
 const Background = styled.div`

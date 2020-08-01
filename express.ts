@@ -3,6 +3,7 @@ const express = require('express')
 const { CommandoClient } = require('discord.js-commando')
 const Keyv = require('keyv')
 const KeyvProvider = require('commando-provider-keyv')
+require('dotenv').config()
 
 const app = express()
 app.use(express.static(path.join(__dirname, '/build')))
@@ -50,6 +51,6 @@ client.on('ready', () => {
 
 const settings = { serialize: (data) => data, deserialize: (data) => data }
 
-client.setProvider(new KeyvProvider(new Keyv(process.env.DB_HOST, settings)))
+client.setProvider(new KeyvProvider(new Keyv(process.env.REACT_APP_DB_HOST, settings)))
 
-client.login(process.env.DISCORD_TOKEN)
+client.login(process.env.REACT_APP_DISCORD_TOKEN)
