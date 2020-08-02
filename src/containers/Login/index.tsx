@@ -30,6 +30,7 @@ const LoginContainer = styled.div`
   transform: translate(-50%, -50%);
   border-radius: 8px;
   padding: 8px;
+  text-align: center;
 `
 
 const LoginTitle = styled.h1`
@@ -55,7 +56,7 @@ const Login = () => {
     <Background>
       <LoginContainer>
         <LoginTitle>Sign-In</LoginTitle>
-        <Button onClick={login} type="primary">
+        <Button onClick={login} type="primary" shape="round" size="large">
           Sign-In with Discord
         </Button>
       </LoginContainer>

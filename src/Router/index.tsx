@@ -1,9 +1,12 @@
 import React from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
 import { connect, ConnectedProps } from 'react-redux'
+import { RootState } from '~/redux'
 import Login from '~/containers/Login'
 import Validate from '~/containers/Validate'
-import { RootState } from '~/redux'
+import Home from '~/containers/Home'
+import Layout from '~/containers/Layout'
+
 const mapStateToProps = (state: RootState) => ({ auth: state.auth })
 const mapDispatchToProps = {}
 const connector = connect(mapStateToProps, mapDispatchToProps)
@@ -11,7 +14,6 @@ type ReduxProps = ConnectedProps<typeof connector>
 type Props = ReduxProps & {}
 
 const RouterContainer = (props: Props) => {
-  console.log('props :>> ', props)
   const AuthRoute = ({ children, ...rest }: { children: React.ReactNode }) => (
     <Route
       {...rest}
@@ -33,17 +35,13 @@ const RouterContainer = (props: Props) => {
   return (
     <Router>
       <Switch>
-        <Route path="/login">
-          <Login />
-        </Route>
-        <Route path="/validate">
-          <Validate />
-        </Route>
+        <Route path="/login" component={Login} />
+        <Route path="/validate" component={Validate}></Route>
         <AuthRoute>
-          <Route exact path="/">
-            <div>
-              <h1>login here</h1>
-            </div>
+          <Route path="/">
+            <Layout>
+              <Route exact path="/" component={Home} />
+            </Layout>
           </Route>
         </AuthRoute>
       </Switch>

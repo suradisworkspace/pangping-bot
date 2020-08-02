@@ -28,8 +28,8 @@ const Validate = (props: Props) => {
         'https://discord.com/api/oauth2/token',
         queryString.stringify({
           client_id: discordClient.clientId,
-          clientSecret: process.env.REACT_APP_CLIENT_SECRET,
-          redirectUri: process.env.REACT_APP_REDIRECT_URI,
+          client_secret: process.env.REACT_APP_CLIENT_SECRET,
+          redirect_uri: process.env.REACT_APP_REDIRECT_URI,
           scope: 'identify',
           grant_type: 'authorization_code',
           code: params.code,
@@ -40,13 +40,13 @@ const Validate = (props: Props) => {
           },
         }
       )
-      console.log('props :>> ', props)
       if (res.status === 200) {
         // localStorage.setItem('accessToken', res.data.access_token)
         // localStorage.setItem('refreshToken', res.data.refresh_token)
         props.setToken(res.data.access_token, res.data.refresh_token)
         history.push('/')
       } else {
+        console.log('res :>> ', res)
         history.push('/login')
       }
     } catch (err) {
