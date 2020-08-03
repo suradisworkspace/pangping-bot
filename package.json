@@ -50,8 +50,8 @@
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "server": "node express.ts",
-    "server-build": "craco build && node express.ts"
+    "server": "node express.js",
+    "server-build": "craco build && node express.js"
   },
   "eslintConfig": {
     "extends": "react-app"

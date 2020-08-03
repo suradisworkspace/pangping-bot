@@ -3,8 +3,9 @@ const express = require('express')
 const { CommandoClient } = require('discord.js-commando')
 const KeyvProvider = require('commando-provider-keyv')
 const { body, validationResult } = require('express-validator')
+const Keyv = require('keyv')
+const settings = { serialize: (data) => data, deserialize: (data) => data, namespace: 'users', collection: 'settings' }
 require('dotenv').config()
-const db = require('./src/helpers/db.ts')
 
 // DISCORD
 const queue = new Map()
@@ -32,7 +33,7 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`)
 })
 
-client.setProvider(new KeyvProvider(db))
+client.setProvider(new KeyvProvider(new Keyv(process.env.REACT_APP_DB_HOST, settings)))
 
 client.login(process.env.REACT_APP_DISCORD_TOKEN)
 
