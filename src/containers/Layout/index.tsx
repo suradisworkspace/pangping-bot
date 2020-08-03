@@ -1,10 +1,18 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { connect, ConnectedProps } from 'react-redux'
 import { Layout, Menu } from 'antd'
 import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons'
 import './style.css'
 const { Header, Content, Footer, Sider } = Layout
 
+const mapStateToProps = (state: Object) => state
+const mapDispatchToProps = {}
+const connector = connect(mapStateToProps, mapDispatchToProps)
+type ReduxProps = ConnectedProps<typeof connector>
+type Props = ReduxProps & {}
+
 const Template = (props: { children: React.ReactNode }) => {
+  useEffect(() => {}, [])
   return (
     <Layout className="theme-container">
       <Sider
@@ -46,4 +54,4 @@ const Template = (props: { children: React.ReactNode }) => {
   )
 }
 
-export default Template
+export default connector(Template)

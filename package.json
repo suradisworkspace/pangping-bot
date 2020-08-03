@@ -26,6 +26,7 @@
     "discord.js-commando": "https://github.com/discordjs/Commando.git",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-validator": "^6.6.0",
     "keyv": "^4.0.1",
     "node-opus": "^0.3.3",
     "opusscript": "^0.0.7",

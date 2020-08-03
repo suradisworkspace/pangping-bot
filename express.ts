@@ -3,8 +3,10 @@ const express = require('express')
 const { CommandoClient } = require('discord.js-commando')
 const Keyv = require('keyv')
 const KeyvProvider = require('commando-provider-keyv')
+const { body, validationResult } = require('express-validator')
 require('dotenv').config()
 
+const settings = { serialize: (data) => data, deserialize: (data) => data, namespace: 'users' }
 const app = express()
 app.use(express.static(path.join(__dirname, '/build')))
 
@@ -12,6 +14,24 @@ app.get('/api/getList', (req, res) => {
   var list = ['item1', 'item2', 'item3']
   res.json(list)
   console.log('Sent list of items')
+})
+
+app.get('/api/test', async (req, res) => {
+  // console.log('req', req)
+  // console.log('res', res)
+  const users = new Keyv(process.env.REACT_APP_DB_HOST, settings)
+  const db = await users.get('317652808641806350')
+  console.log('db', db)
+  var list = ['item1', 'item2', 'item3']
+  res.json(list)
+})
+
+app.get('/api/getServer', [body('token').not().isEmpty()], async (req, res) => {
+  const errors = validationResult(req)
+  console.log('errors', errors)
+  res.type('json')
+  var list = ['item1', 'item2', 'item3']
+  res.json(list)
 })
 
 app.get('*', (req, res) => {
@@ -48,8 +68,6 @@ client.registry
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`)
 })
-
-const settings = { serialize: (data) => data, deserialize: (data) => data }
 
 client.setProvider(new KeyvProvider(new Keyv(process.env.REACT_APP_DB_HOST, settings)))
 
