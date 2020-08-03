@@ -4,7 +4,7 @@ const { CommandoClient } = require('discord.js-commando')
 const KeyvProvider = require('commando-provider-keyv')
 const { body, validationResult } = require('express-validator')
 require('dotenv').config()
-const db = require('./db.ts')
+const db = require('./src/helpers/db.ts')
 
 // const settings = { serialize: (data) => data, deserialize: (data) => data, namespace: 'users', collection: 'settings' }
 const app = express()
