@@ -1,12 +1,12 @@
 const path = require('path')
 const express = require('express')
 const { CommandoClient } = require('discord.js-commando')
-const Keyv = require('keyv')
 const KeyvProvider = require('commando-provider-keyv')
 const { body, validationResult } = require('express-validator')
 require('dotenv').config()
+const db = require('./db.ts')
 
-const settings = { serialize: (data) => data, deserialize: (data) => data, namespace: 'users' }
+// const settings = { serialize: (data) => data, deserialize: (data) => data, namespace: 'users', collection: 'settings' }
 const app = express()
 app.use(express.static(path.join(__dirname, '/build')))
 
@@ -17,11 +17,6 @@ app.get('/api/getList', (req, res) => {
 })
 
 app.get('/api/test', async (req, res) => {
-  // console.log('req', req)
-  // console.log('res', res)
-  const users = new Keyv(process.env.REACT_APP_DB_HOST, settings)
-  const db = await users.get('317652808641806350')
-  console.log('db', db)
   var list = ['item1', 'item2', 'item3']
   res.json(list)
 })
@@ -69,6 +64,6 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`)
 })
 
-client.setProvider(new KeyvProvider(new Keyv(process.env.REACT_APP_DB_HOST, settings)))
+client.setProvider(new KeyvProvider(db))
 
 client.login(process.env.REACT_APP_DISCORD_TOKEN)
