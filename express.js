@@ -18,6 +18,8 @@ const client = new CommandoClient({
   queue,
 })
 
+const discordValidator = [body('token').not().isEmpty()]
+
 client.registry
   .registerDefaultTypes()
   .registerDefaultGroups()
@@ -56,7 +58,7 @@ app.get('/api/test', (req, res) => {
   res.json(list)
 })
 
-app.get('/api/getServer', [body('token').not().isEmpty()], async (req, res) => {
+app.get('/api/getServer', discordValidator, async (req, res) => {
   const errors = validationResult(req)
   console.log('errors', errors)
   res.type('json')
