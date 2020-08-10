@@ -39,6 +39,9 @@ const Template = (props: { children: React.ReactNode }) => {
           <Menu.Item key="4" icon={<UserOutlined />}>
             nav 4
           </Menu.Item>
+          <Menu.Item icon={<UserOutlined />} onClick={() => console.log('logout click')}>
+            Log out
+          </Menu.Item>
         </Menu>
       </Sider>
       <Layout>

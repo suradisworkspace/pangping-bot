@@ -17,6 +17,9 @@ const auth = (state = initialState, action: { type: string; payload?: object }):
         ...state,
         ...action.payload,
       }
+    case ACTION.REMOVE_TOKEN:
+      return initialState
+
     default:
       return state
   }

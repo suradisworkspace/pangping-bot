@@ -7,3 +7,7 @@ export const setToken = (accessToken: string, refreshToken: string) => ({
     refreshToken,
   },
 })
+
+export const removeToken = () => ({
+  type: ACTION.REMOVE_TOKEN,
+})
