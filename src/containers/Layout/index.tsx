@@ -1,18 +1,29 @@
 import React, { useState, useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
 import { connect, ConnectedProps } from 'react-redux'
 import { Layout, Menu } from 'antd'
 import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons'
+import { removeToken } from '~/redux/auth/actions'
 import './style.css'
-const { Header, Content, Footer, Sider } = Layout
 
+const { Header, Content, Footer, Sider } = Layout
 const mapStateToProps = (state: Object) => state
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+  removeToken,
+}
 const connector = connect(mapStateToProps, mapDispatchToProps)
 type ReduxProps = ConnectedProps<typeof connector>
-type Props = ReduxProps & {}
+type PropsTypes = ReduxProps & { children: React.ReactNode }
 
-const Template = (props: { children: React.ReactNode }) => {
+const Template = (props: PropsTypes) => {
+  const history = useHistory()
   useEffect(() => {}, [])
+
+  const logout = () => {
+    props.removeToken()
+    history.push('/')
+  }
+
   return (
     <Layout className="theme-container">
       <Sider
@@ -39,7 +50,7 @@ const Template = (props: { children: React.ReactNode }) => {
           <Menu.Item key="4" icon={<UserOutlined />}>
             nav 4
           </Menu.Item>
-          <Menu.Item icon={<UserOutlined />} onClick={() => console.log('logout click')}>
+          <Menu.Item icon={<UserOutlined />} onClick={logout}>
             Log out
           </Menu.Item>
         </Menu>
