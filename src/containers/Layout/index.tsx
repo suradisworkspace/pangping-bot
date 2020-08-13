@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Layout, Menu } from 'antd'
 import { useCookies } from 'react-cookie'
+import axios from '~/helpers/axios'
 import {
   UploadOutlined,
   UserOutlined,
@@ -18,17 +19,23 @@ type PropsTypes = { children: React.ReactNode }
 const Template = (props: PropsTypes) => {
   const history = useHistory()
   let selectedServer = ''
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [cookies, setCookie, removeCookie] = useCookies()
   const [loading, setLoading] = useState(true)
+
   useEffect(() => {
-    checkAuth()
+    initiateUser()
   }, [])
 
-  const checkAuth = () => {
+  const initiateUser = async () => {
     setLoading(true)
-    setTimeout(() => {
+    try {
+      const res = await axios.get('https://discord.com/api/users/@me')
+      console.log('res :>> ', res)
+    } catch (error) {
+    } finally {
       setLoading(false)
-    }, 1000)
+    }
   }
 
   const logout = () => {
