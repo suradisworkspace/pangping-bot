@@ -1,21 +1,20 @@
 import React, { useEffect } from 'react'
 import { useLocation, useHistory } from 'react-router-dom'
+import { useCookies } from 'react-cookie'
 import queryString from 'query-string'
 import discordClient from '~/discordOauth'
 import axios from 'axios'
-import { connect, ConnectedProps } from 'react-redux'
-import { RootState } from '~/redux'
-import { setToken } from '~/redux/auth/actions'
 
-const mapStateToProps = (state: RootState) => ({ auth: state.auth })
-const mapDispatchToProps = { setToken }
-const connector = connect(mapStateToProps, mapDispatchToProps)
-type ReduxProps = ConnectedProps<typeof connector>
-type Props = ReduxProps & {}
+// const mapStateToProps = (state: RootState) => ({ auth: state.auth })
+// const mapDispatchToProps = { setToken }
+// const connector = connect(mapStateToProps, mapDispatchToProps)
+// type ReduxProps = ConnectedProps<typeof connector>
+// type Props = ReduxProps & {}
 
-const Validate = (props: Props) => {
+const Validate = () => {
   const location = useLocation()
   const history = useHistory()
+  const [cookies, setCookie, removeCookie] = useCookies()
   useEffect(() => {
     checkValidate()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -43,7 +42,8 @@ const Validate = (props: Props) => {
       if (res.status === 200) {
         // localStorage.setItem('accessToken', res.data.access_token)
         // localStorage.setItem('refreshToken', res.data.refresh_token)
-        props.setToken(res.data.access_token, res.data.refresh_token)
+        setCookie('accessToken', res.data.access_token)
+        setCookie('refreshToken', res.data.refresh_token)
         history.push('/')
       } else {
         console.log('res :>> ', res)
@@ -62,4 +62,4 @@ const Validate = (props: Props) => {
   )
 }
 
-export default connector(Validate)
+export default Validate

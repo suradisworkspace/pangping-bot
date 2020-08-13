@@ -1,24 +1,26 @@
 import React from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
-import { connect, ConnectedProps } from 'react-redux'
-import { RootState } from '~/redux'
+// import { connect, ConnectedProps } from 'react-redux'
+// import { RootState } from '~/redux'
+import { useCookies } from 'react-cookie'
 import Login from '~/containers/Login'
 import Validate from '~/containers/Validate'
 import Home from '~/containers/Home'
 import Layout from '~/containers/Layout'
 
-const mapStateToProps = (state: RootState) => ({ auth: state.auth })
-const mapDispatchToProps = {}
-const connector = connect(mapStateToProps, mapDispatchToProps)
-type ReduxProps = ConnectedProps<typeof connector>
-type Props = ReduxProps & {}
+// const mapStateToProps = (state: RootState) => ({ auth: state.auth })
+// const mapDispatchToProps = {}
+// const connector = connect(mapStateToProps, mapDispatchToProps)
+// type ReduxProps = ConnectedProps<typeof connector>
+// type Props = ReduxProps & {}
 
-const RouterContainer = (props: Props) => {
+const RouterContainer = () => {
+  const [cookies, setCookie, removeCookie] = useCookies(['accessToken'])
   const AuthRoute = ({ children, ...rest }: { children: React.ReactNode }) => (
     <Route
       {...rest}
       render={({ location }) => {
-        return !!props.auth.accessToken ? (
+        return !!cookies.accessToken ? (
           children
         ) : (
           <Redirect
@@ -49,4 +51,5 @@ const RouterContainer = (props: Props) => {
   )
 }
 
-export default connector(RouterContainer)
+// export default connector(RouterContainer)
+export default RouterContainer

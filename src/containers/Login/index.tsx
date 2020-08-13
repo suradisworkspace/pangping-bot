@@ -4,7 +4,6 @@ import { Button } from 'antd'
 import crypto from 'crypto'
 import DiscordOauth2 from 'discord-oauth2'
 import discordClient from '~/discordOauth'
-console.log('process.evn :>> ', process.env)
 
 const oauth = new DiscordOauth2({
   clientId: discordClient.clientId,

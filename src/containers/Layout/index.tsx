@@ -1,27 +1,48 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
-import { connect, ConnectedProps } from 'react-redux'
 import { Layout, Menu } from 'antd'
-import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons'
-import { removeToken } from '~/redux/auth/actions'
+import { useCookies } from 'react-cookie'
+import {
+  UploadOutlined,
+  UserOutlined,
+  VideoCameraOutlined,
+  PlusCircleFilled,
+  DatabaseOutlined,
+} from '@ant-design/icons'
 import './style.css'
 
 const { Header, Content, Footer, Sider } = Layout
-const mapStateToProps = (state: Object) => state
-const mapDispatchToProps = {
-  removeToken,
-}
-const connector = connect(mapStateToProps, mapDispatchToProps)
-type ReduxProps = ConnectedProps<typeof connector>
-type PropsTypes = ReduxProps & { children: React.ReactNode }
+const { SubMenu } = Menu
+type PropsTypes = { children: React.ReactNode }
 
 const Template = (props: PropsTypes) => {
   const history = useHistory()
-  useEffect(() => {}, [])
+  let selectedServer = ''
+  const [cookies, setCookie, removeCookie] = useCookies()
+  const [loading, setLoading] = useState(true)
+  useEffect(() => {
+    checkAuth()
+  }, [])
+
+  const checkAuth = () => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
+  }
 
   const logout = () => {
-    props.removeToken()
+    removeCookie('accessToken')
+    removeCookie('refreshToken')
     history.push('/')
+  }
+
+  if (loading) {
+    return (
+      <div>
+        <h1>loading</h1>
+      </div>
+    )
   }
 
   return (
@@ -37,19 +58,19 @@ const Template = (props: PropsTypes) => {
         }}
       >
         <div className="logo" />
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={['4']}>
-          <Menu.Item key="1" icon={<UserOutlined />}>
-            nav 1
-          </Menu.Item>
-          <Menu.Item key="2" icon={<VideoCameraOutlined />}>
-            nav 2
-          </Menu.Item>
-          <Menu.Item key="3" icon={<UploadOutlined />}>
-            nav 3
-          </Menu.Item>
-          <Menu.Item key="4" icon={<UserOutlined />}>
-            nav 4
-          </Menu.Item>
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={[selectedServer]} defaultOpenKeys={['yourServer']}>
+          <Menu.Item icon={<PlusCircleFilled />}>Add Bot</Menu.Item>
+          <SubMenu key="yourServer" icon={<DatabaseOutlined />} title="Manage Bot">
+            <Menu.Item key="2" icon={<VideoCameraOutlined />}>
+              nav 2
+            </Menu.Item>
+            <Menu.Item key="3" icon={<UploadOutlined />}>
+              nav 3
+            </Menu.Item>
+            <Menu.Item key="4" icon={<UserOutlined />}>
+              nav 4
+            </Menu.Item>
+          </SubMenu>
           <Menu.Item icon={<UserOutlined />} onClick={logout}>
             Log out
           </Menu.Item>
@@ -68,4 +89,4 @@ const Template = (props: PropsTypes) => {
   )
 }
 
-export default connector(Template)
+export default Template
