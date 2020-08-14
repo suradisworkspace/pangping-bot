@@ -39,8 +39,8 @@ const Template = (props: PropsTypes) => {
   }
 
   const logout = () => {
-    removeCookie('accessToken')
-    removeCookie('refreshToken')
+    removeCookie('access_token')
+    removeCookie('refresh_token')
     removeCookie('uid')
     history.push('/')
   }

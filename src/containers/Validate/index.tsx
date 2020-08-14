@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useLocation, useHistory } from 'react-router-dom'
 import { useCookies } from 'react-cookie'
 import { Spin } from 'antd'
+import { isEmpty } from 'lodash'
 import queryString from 'query-string'
 import styled from 'styled-components'
 import discordClient from '~/discordOauth'
@@ -17,6 +18,7 @@ import discordAPI from '~/api/discord'
 const Validate = () => {
   const location = useLocation()
   const history = useHistory()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [cookies, setCookie, removeCookie] = useCookies()
   useEffect(() => {
     checkValidate()
@@ -25,7 +27,9 @@ const Validate = () => {
 
   const checkValidate = async () => {
     const params = queryString.parse(location.search)
-
+    if (!!cookies.access_token || isEmpty(params)) {
+      history.push('/')
+    }
     try {
       const res = await axios.post(
         'https://discord.com/api/oauth2/token',
@@ -44,11 +48,9 @@ const Validate = () => {
         }
       )
       if (res.status === 200) {
-        // localStorage.setItem('accessToken', res.data.access_token)
-        // localStorage.setItem('refreshToken', res.data.refresh_token)
         console.log('res.data :>> ', res.data)
-        setCookie('accessToken', res.data.access_token)
-        setCookie('refreshToken', res.data.refresh_token)
+        setCookie('access_token', res.data.access_token)
+        setCookie('refresh_token', res.data.refresh_token)
         const user = await discordAPI.user.info()
         setCookie('uid', user.id)
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom'
+import { BrowserRouter as Router, Switch, Route, Redirect, RouteProps } from 'react-router-dom'
 // import { connect, ConnectedProps } from 'react-redux'
 // import { RootState } from '~/redux'
 import { useCookies } from 'react-cookie'
@@ -15,12 +15,13 @@ import Layout from '~/containers/Layout'
 // type Props = ReduxProps & {}
 
 const RouterContainer = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(['accessToken'])
-  const AuthRoute = ({ children, ...rest }: { children: React.ReactNode }) => (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [cookies, setCookie, removeCookie] = useCookies(['access_token'])
+  const AuthRoute = ({ children, ...rest }: RouteProps) => (
     <Route
       {...rest}
       render={({ location }) => {
-        return !!cookies.accessToken ? (
+        return !!cookies.access_token ? (
           children
         ) : (
           <Redirect
@@ -33,18 +34,36 @@ const RouterContainer = () => {
       }}
     />
   )
+  const UnAuthRoute = ({ children, ...rest }: RouteProps) => {
+    console.log('cookies.access_token :>> ', cookies.access_token)
+    return (
+      <Route
+        {...rest}
+        render={({ location }) => {
+          return !cookies.access_token ? (
+            children
+          ) : (
+            <Redirect
+              to={{
+                pathname: '/',
+                state: { from: location },
+              }}
+            />
+          )
+        }}
+      />
+    )
+  }
 
   return (
     <Router>
       <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/validate" component={Validate}></Route>
-        <AuthRoute>
-          <Route path="/">
-            <Layout>
-              <Route exact path="/" component={Home} />
-            </Layout>
-          </Route>
+        <UnAuthRoute path="/login" children={Login} />
+        <Route path="/validate" component={Validate} />
+        <AuthRoute path="/">
+          <Layout>
+            <Route exact path="/" component={Home} />
+          </Layout>
         </AuthRoute>
       </Switch>
     </Router>

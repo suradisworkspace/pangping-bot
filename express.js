@@ -18,7 +18,7 @@ const client = new CommandoClient({
   queue,
 })
 
-const discordValidator = [body('token').not().isEmpty()]
+const discordValidator = [body('access_token').not().isEmpty()]
 
 client.registry
   .registerDefaultTypes()
@@ -59,6 +59,7 @@ client.on('ready', () => {
     var list = ['item1', 'item2', 'item3']
     res.json(list)
   })
+  app.get('/api/userInfo', discordValidator, async (req, res) => {})
 
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname + '/build/index.html'))

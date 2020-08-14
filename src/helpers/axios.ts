@@ -6,7 +6,7 @@ const instance = axios.create()
 instance.interceptors.request.use(
   async (config: AxiosRequestConfig) => {
     const cookies = new Cookies()
-    const accessToken = cookies.get('accessToken')
+    const accessToken = cookies.get('access_token')
     const uid = cookies.get('uid')
     config.headers = {
       Authorization: `Bearer ${accessToken}`,
