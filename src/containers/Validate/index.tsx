@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react'
 import { useLocation, useHistory } from 'react-router-dom'
 import { useCookies } from 'react-cookie'
+import { Spin } from 'antd'
 import queryString from 'query-string'
+import styled from 'styled-components'
 import discordClient from '~/discordOauth'
 import axios from 'axios'
 import discordAPI from '~/api/discord'
@@ -48,7 +50,7 @@ const Validate = () => {
         setCookie('accessToken', res.data.access_token)
         setCookie('refreshToken', res.data.refresh_token)
         const user = await discordAPI.user.info()
-        setCookie('uid', user.uid)
+        setCookie('uid', user.id)
 
         history.push('/')
       } else {
@@ -61,10 +63,18 @@ const Validate = () => {
     }
   }
 
+  const Container = styled.div`
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  `
+
   return (
-    <div>
-      <h1>validating</h1>
-    </div>
+    <Container>
+      <Spin size="large" />
+    </Container>
   )
 }
 

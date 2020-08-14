@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
-import { Layout, Menu, Space, Spin } from 'antd'
+import { Layout, Menu, Spin } from 'antd'
 import { useCookies } from 'react-cookie'
 import discordAPI from '~/api/discord'
 import {
@@ -41,6 +41,7 @@ const Template = (props: PropsTypes) => {
   const logout = () => {
     removeCookie('accessToken')
     removeCookie('refreshToken')
+    removeCookie('uid')
     history.push('/')
   }
 
