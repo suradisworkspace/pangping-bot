@@ -4,6 +4,7 @@ import { useCookies } from 'react-cookie'
 import queryString from 'query-string'
 import discordClient from '~/discordOauth'
 import axios from 'axios'
+import discordAPI from '~/api/discord'
 
 // const mapStateToProps = (state: RootState) => ({ auth: state.auth })
 // const mapDispatchToProps = { setToken }
@@ -46,6 +47,9 @@ const Validate = () => {
         console.log('res.data :>> ', res.data)
         setCookie('accessToken', res.data.access_token)
         setCookie('refreshToken', res.data.refresh_token)
+        const user = await discordAPI.user.info()
+        setCookie('uid', user.uid)
+
         history.push('/')
       } else {
         console.log('res :>> ', res)

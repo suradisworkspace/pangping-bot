@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
-import { Layout, Menu } from 'antd'
+import { Layout, Menu, Space, Spin } from 'antd'
 import { useCookies } from 'react-cookie'
-import axios from '~/helpers/axios'
+import discordAPI from '~/api/discord'
 import {
   UploadOutlined,
   UserOutlined,
@@ -30,7 +30,7 @@ const Template = (props: PropsTypes) => {
   const initiateUser = async () => {
     setLoading(true)
     try {
-      const res = await axios.get('https://discord.com/api/users/@me')
+      const res = await discordAPI.user.info()
       console.log('res :>> ', res)
     } catch (error) {
     } finally {
@@ -46,8 +46,8 @@ const Template = (props: PropsTypes) => {
 
   if (loading) {
     return (
-      <div>
-        <h1>loading</h1>
+      <div className="loading-container">
+        <Spin size="large" />
       </div>
     )
   }
