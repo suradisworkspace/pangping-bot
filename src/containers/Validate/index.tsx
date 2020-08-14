@@ -48,6 +48,7 @@ const Validate = () => {
         }
       )
       if (res.status === 200) {
+        // IMPLEMENT_HERE
         console.log('res.data :>> ', res.data)
         setCookie('access_token', res.data.access_token)
         setCookie('refresh_token', res.data.refresh_token)
@@ -56,7 +57,6 @@ const Validate = () => {
 
         history.push('/')
       } else {
-        console.log('res :>> ', res)
         history.push('/login')
       }
     } catch (err) {
