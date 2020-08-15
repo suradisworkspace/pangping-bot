@@ -2,11 +2,12 @@ const path = require('path')
 const express = require('express')
 const { CommandoClient } = require('discord.js-commando')
 const KeyvProvider = require('commando-provider-keyv')
-const { body, validationResult } = require('express-validator')
+const { validationResult, header } = require('express-validator')
+const { Permissions } = require('discord.js')
+const axios = require('axios')
 const Keyv = require('keyv')
 const settings = { serialize: (data) => data, deserialize: (data) => data, namespace: 'users', collection: 'settings' }
 require('dotenv').config()
-
 // DISCORD
 const queue = new Map()
 
@@ -18,7 +19,7 @@ const client = new CommandoClient({
   queue,
 })
 
-const discordValidator = [body('access_token').not().isEmpty()]
+const discordValidator = [header('authorization').not().isEmpty()]
 
 client.registry
   .registerDefaultTypes()
@@ -52,14 +53,49 @@ client.on('ready', () => {
     res.json(list)
   })
 
-  app.get('/api/getServer', discordValidator, async (req, res) => {
+  app.get('/api/userInfo', discordValidator, async (req, res) => {
     const errors = validationResult(req)
-    console.log('errors', errors)
-    res.type('json')
-    var list = ['item1', 'item2', 'item3']
-    res.json(list)
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() })
+    }
+    try {
+      const headers = {
+        authorization: req.headers.authorization,
+      }
+
+      const user = await axios
+        .get('https://discord.com/api/users/@me', {
+          headers,
+        })
+        .then((res) => res.data)
+      const guilds = await axios
+        .get('https://discord.com/api/users/@me/guilds', {
+          headers,
+        })
+        .then((res) => res.data)
+      const filteredGuilds = guilds.filter((guild) => {
+        if (guild.owner) {
+          return true
+        }
+        const permissions = new Permissions(guild.permissions)
+        if (permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
+          return true
+        }
+        return false
+      })
+      res.type('json')
+      return res.json({
+        user,
+        guilds: filteredGuilds,
+      })
+    } catch (error) {
+      console.log('error :>> ', error)
+      if (error.response) {
+        return res.status(error.response.status).send(error.response.statusText)
+      }
+      return res.status(500).send('Internal Server Error')
+    }
   })
-  app.get('/api/userInfo', discordValidator, async (req, res) => {})
 
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname + '/build/index.html'))

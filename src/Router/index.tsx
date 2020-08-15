@@ -35,7 +35,6 @@ const RouterContainer = () => {
     />
   )
   const UnAuthRoute = ({ children, ...rest }: RouteProps) => {
-    console.log('cookies.access_token :>> ', cookies.access_token)
     return (
       <Route
         {...rest}
@@ -58,7 +57,7 @@ const RouterContainer = () => {
   return (
     <Router>
       <Switch>
-        <UnAuthRoute path="/login" children={Login} />
+        <UnAuthRoute path="/login" children={<Login />} />
         <Route path="/validate" component={Validate} />
         <AuthRoute path="/">
           <Layout>

@@ -2,26 +2,22 @@ import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Layout, Menu, Spin } from 'antd'
 import { useCookies } from 'react-cookie'
-import discordAPI from '~/api/discord'
-import {
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-  PlusCircleFilled,
-  DatabaseOutlined,
-} from '@ant-design/icons'
+import styled from 'styled-components'
+import serverAPI, { GuildDetailsResponse, UserResponse } from '~/api/server'
+import { UserOutlined, PlusCircleFilled, DatabaseOutlined } from '@ant-design/icons'
 import './style.css'
 
 const { Header, Content, Footer, Sider } = Layout
 const { SubMenu } = Menu
 type PropsTypes = { children: React.ReactNode }
-
 const Template = (props: PropsTypes) => {
   const history = useHistory()
   let selectedServer = ''
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [cookies, setCookie, removeCookie] = useCookies()
   const [loading, setLoading] = useState(true)
+  const [guilds, setGuilds] = useState([] as Array<GuildDetailsResponse>)
+  const [user, setUser] = useState({} as UserResponse)
 
   useEffect(() => {
     initiateUser()
@@ -30,8 +26,11 @@ const Template = (props: PropsTypes) => {
   const initiateUser = async () => {
     setLoading(true)
     try {
-      const res = await discordAPI.user.info()
-      console.log('res :>> ', res)
+      // const res = await discordAPI.user.info()
+      // console.log('res :>> ', res)
+      const res = await serverAPI.userInfo()
+      setGuilds(res.guilds)
+      setUser(res.user)
     } catch (error) {
     } finally {
       setLoading(false)
@@ -41,9 +40,15 @@ const Template = (props: PropsTypes) => {
   const logout = () => {
     removeCookie('access_token')
     removeCookie('refresh_token')
-    removeCookie('uid')
+    // removeCookie('uid')
     history.push('/')
   }
+
+  const Img = styled.img`
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: 0.2rem;
+  `
 
   if (loading) {
     return (
@@ -69,15 +74,14 @@ const Template = (props: PropsTypes) => {
         <Menu theme="dark" mode="inline" defaultSelectedKeys={[selectedServer]} defaultOpenKeys={['yourServer']}>
           <Menu.Item icon={<PlusCircleFilled />}>Add Bot</Menu.Item>
           <SubMenu key="yourServer" icon={<DatabaseOutlined />} title="Manage Bot">
-            <Menu.Item key="2" icon={<VideoCameraOutlined />}>
-              nav 2
-            </Menu.Item>
-            <Menu.Item key="3" icon={<UploadOutlined />}>
-              nav 3
-            </Menu.Item>
-            <Menu.Item key="4" icon={<UserOutlined />}>
-              nav 4
-            </Menu.Item>
+            {guilds.map((guild) => (
+              <Menu.Item
+                key={guild.id}
+                icon={<Img src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`} alt="" />}
+              >
+                {guild.name}
+              </Menu.Item>
+            ))}
           </SubMenu>
           <Menu.Item icon={<UserOutlined />} onClick={logout}>
             Log out
