@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
-import { Layout, Menu, Spin } from 'antd'
+import { Layout, Menu, Spin, Avatar } from 'antd'
 import { useCookies } from 'react-cookie'
 import styled from 'styled-components'
+import randomColor from 'randomcolor'
 import serverAPI, { GuildDetailsResponse, UserResponse } from '~/api/server'
 import { UserOutlined, PlusCircleFilled, DatabaseOutlined } from '@ant-design/icons'
 import './style.css'
@@ -44,12 +45,6 @@ const Template = (props: PropsTypes) => {
     history.push('/')
   }
 
-  const Img = styled.img`
-    width: 1.5rem;
-    height: 1.5rem;
-    margin-right: 0.2rem;
-  `
-
   if (loading) {
     return (
       <div className="loading-container">
@@ -72,12 +67,37 @@ const Template = (props: PropsTypes) => {
       >
         <div className="logo" />
         <Menu theme="dark" mode="inline" defaultSelectedKeys={[selectedServer]} defaultOpenKeys={['yourServer']}>
+          <div className="userInfo">
+            <Avatar
+              className="userInfo-avatar"
+              size={45}
+              src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`}
+            >
+              {user.username.charAt(0)}
+            </Avatar>
+            <div>
+              <p>logged in as:</p>
+              <b>{user.username}</b>
+            </div>
+          </div>
           <Menu.Item icon={<PlusCircleFilled />}>Add Bot</Menu.Item>
           <SubMenu key="yourServer" icon={<DatabaseOutlined />} title="Manage Bot">
             {guilds.map((guild) => (
               <Menu.Item
+                className="server-list"
                 key={guild.id}
-                icon={<Img src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`} alt="" />}
+                icon={
+                  <Avatar
+                    src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`}
+                    className="server-list-image"
+                    size={28}
+                    style={{
+                      backgroundColor: randomColor(),
+                    }}
+                  >
+                    {guild.name.charAt(0)}
+                  </Avatar>
+                }
               >
                 {guild.name}
               </Menu.Item>

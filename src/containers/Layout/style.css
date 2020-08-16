@@ -21,3 +21,19 @@
   justify-content: center;
   align-items: center;
 }
+.server-list {
+  padding-left: 32px !important;
+}
+.server-list-image {
+  margin-right: 4px;
+}
+.userInfo {
+  width: 100%;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+.userInfo-avatar {
+  margin-right: 4px;
+}
