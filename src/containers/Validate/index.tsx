@@ -7,13 +7,6 @@ import queryString from 'query-string'
 import styled from 'styled-components'
 import discordClient from '~/discordOauth'
 import axios from 'axios'
-import discordAPI from '~/api/discord'
-
-// const mapStateToProps = (state: RootState) => ({ auth: state.auth })
-// const mapDispatchToProps = { setToken }
-// const connector = connect(mapStateToProps, mapDispatchToProps)
-// type ReduxProps = ConnectedProps<typeof connector>
-// type Props = ReduxProps & {}
 
 const Validate = () => {
   const location = useLocation()

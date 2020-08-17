@@ -1,18 +1,10 @@
 import React from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect, RouteProps } from 'react-router-dom'
-// import { connect, ConnectedProps } from 'react-redux'
-// import { RootState } from '~/redux'
 import { useCookies } from 'react-cookie'
 import Login from '~/containers/Login'
 import Validate from '~/containers/Validate'
 import Home from '~/containers/Home'
 import Layout from '~/containers/Layout'
-
-// const mapStateToProps = (state: RootState) => ({ auth: state.auth })
-// const mapDispatchToProps = {}
-// const connector = connect(mapStateToProps, mapDispatchToProps)
-// type ReduxProps = ConnectedProps<typeof connector>
-// type Props = ReduxProps & {}
 
 const RouterContainer = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
