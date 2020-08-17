@@ -6,6 +6,7 @@ const { validationResult, header } = require('express-validator')
 const { Permissions } = require('discord.js')
 const axios = require('axios')
 const Keyv = require('keyv')
+const discordService = require('./services/discord')
 const settings = { serialize: (data) => data, deserialize: (data) => data, namespace: 'users', collection: 'settings' }
 require('dotenv').config()
 // DISCORD
@@ -59,20 +60,8 @@ client.on('ready', () => {
       return res.status(400).json({ errors: errors.array() })
     }
     try {
-      const headers = {
-        authorization: req.headers.authorization,
-      }
-
-      const user = await axios
-        .get('https://discord.com/api/users/@me', {
-          headers,
-        })
-        .then((res) => res.data)
-      const guilds = await axios
-        .get('https://discord.com/api/users/@me/guilds', {
-          headers,
-        })
-        .then((res) => res.data)
+      const user = await discordService.getUser(req.headers)
+      const guilds = await discordService.getGuilds(req.headers)
       const filteredGuilds = guilds.filter((guild) => {
         if (guild.owner) {
           return true
@@ -95,6 +84,15 @@ client.on('ready', () => {
       }
       return res.status(500).send('Internal Server Error')
     }
+  })
+
+  app.get('/api/guild/:id', async (req, res) => {
+    const { params } = req
+    const userGuilds = await discordService.getGuilds(req.headers)
+    console.log('userGuilds :>> ', userGuilds)
+    // const guild = client.guilds.cache.get(params.id)
+
+    res.status(200).send('hello')
   })
 
   app.get('*', (req, res) => {

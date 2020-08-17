@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Layout, Menu, Spin, Avatar } from 'antd'
 import { useCookies } from 'react-cookie'
-import styled from 'styled-components'
+import { includes } from 'lodash'
 import randomColor from 'randomcolor'
 import serverAPI, { GuildDetailsResponse, UserResponse } from '~/api/server'
 import { UserOutlined, PlusCircleFilled, DatabaseOutlined } from '@ant-design/icons'
+import { useStore } from '~/helpers/mobx'
 import './style.css'
 
 const { Header, Content, Footer, Sider } = Layout
@@ -13,6 +14,8 @@ const { SubMenu } = Menu
 type PropsTypes = { children: React.ReactNode }
 const Template = (props: PropsTypes) => {
   const history = useHistory()
+  const store = useStore()
+  const { selectedGuild } = store.browserData
   let selectedServer = ''
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [cookies, setCookie, removeCookie] = useCookies()
