@@ -21,6 +21,7 @@
     "antd": "^4.4.3",
     "axios": "^0.19.2",
     "commando-provider-keyv": "^2.1.0",
+    "cookie-parser": "^1.4.5",
     "craco-antd": "^1.18.1",
     "crypto": "^1.0.1",
     "discord-oauth2": "^2.2.0",

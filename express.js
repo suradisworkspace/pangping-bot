@@ -4,9 +4,9 @@ const { CommandoClient } = require('discord.js-commando')
 const KeyvProvider = require('commando-provider-keyv')
 const { validationResult, header } = require('express-validator')
 const { Permissions } = require('discord.js')
-const axios = require('axios')
 const Keyv = require('keyv')
 const discordService = require('./services/discord')
+const cookieParser = require('cookie-parser')
 const settings = { serialize: (data) => data, deserialize: (data) => data, namespace: 'users', collection: 'settings' }
 require('dotenv').config()
 // DISCORD
@@ -36,6 +36,20 @@ client.registry
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`)
   const app = express()
+  const cookiesHeaders = (req, res, next) => {
+    if (process.env.EXPRESS_MODE === 'dev') {
+      req.headers = {
+        ...req.headers,
+        authorization: `Bearer ${req.cookies.access_token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      }
+    }
+    next()
+  }
+
+  app.use([cookieParser(), cookiesHeaders])
+
   app.use(express.static(path.join(__dirname, '/build')))
 
   app.get('/api/getList', (req, res) => {
@@ -57,12 +71,15 @@ client.on('ready', () => {
   app.get('/api/userInfo', discordValidator, async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() })
+      return res.status(400).send('400 Bad Request')
     }
     try {
       const user = await discordService.getUser(req.headers)
       const guilds = await discordService.getGuilds(req.headers)
       const filteredGuilds = guilds.filter((guild) => {
+        if (!!client.guilds.cache.get(guild.id)) {
+          return false
+        }
         if (guild.owner) {
           return true
         }
@@ -78,7 +95,6 @@ client.on('ready', () => {
         guilds: filteredGuilds,
       })
     } catch (error) {
-      console.log('error :>> ', error)
       if (error.response) {
         return res.status(error.response.status).send(error.response.statusText)
       }
@@ -86,13 +102,30 @@ client.on('ready', () => {
     }
   })
 
-  app.get('/api/guild/:id', async (req, res) => {
-    const { params } = req
-    const userGuilds = await discordService.getGuilds(req.headers)
-    console.log('userGuilds :>> ', userGuilds)
-    // const guild = client.guilds.cache.get(params.id)
+  app.get('/api/guild/:id', discordValidator, async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(400).send('400 Bad Request')
+    }
+    try {
+      const { params } = req
+      const userGuilds = await discordService.getGuilds(req.headers)
+      if (!!userGuilds.findIndex((guild) => guild.id === params.id)) {
+        const guild = client.guilds.cache.get(params.id)
+        console.log('guild :>> ', guild)
+        const guildInfo = {
+          _commandPrefix: guild._commandPrefix,
+        }
+        return res.json(guildInfo)
+      }
 
-    res.status(200).send('hello')
+      return res.status(200).send('hello')
+    } catch (error) {
+      if (error.response) {
+        return res.status(error.response.status).send(error.response.statusText)
+      }
+      return res.status(500).send('Internal Server Error')
+    }
   })
 
   app.get('*', (req, res) => {
@@ -101,8 +134,6 @@ client.on('ready', () => {
 
   const port = process.env.PORT || 5000
   app.listen(port)
-
-  console.log('App is listening on port ' + port)
 })
 
 client.setProvider(new KeyvProvider(new Keyv(process.env.REACT_APP_DB_HOST, settings)))
