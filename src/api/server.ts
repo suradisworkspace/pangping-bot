@@ -32,4 +32,16 @@ export default {
     }
     return axios.get<UserInfoResponse>('/api/userInfo').then((res) => res.data)
   },
+  guild: {
+    getSettings: (guildId: string) => {
+      console.log('guildId', guildId)
+      type GuildConfigResponse = {
+        _commandPrefix: string
+        id: string
+        name: string
+        iconL: string
+      }
+      return axios.get<GuildConfigResponse>(`/api/guild/${guildId}`).then((res) => res.data)
+    },
+  },
 }

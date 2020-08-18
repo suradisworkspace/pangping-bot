@@ -59,12 +59,24 @@ client.on('ready', () => {
   })
 
   app.get('/api/test', (req, res) => {
+    const filterdGuild = client.guilds.cache.filter((guild) => {
+      const member = guild.member('265037333915631616')
+      if (!member) {
+        return false
+      }
+      if (member.user.id === member.ownerID || member.hasPermission('ADMINISTRATOR')) {
+        return true
+      }
+      return false
+    })
+
+    console.log('filterdGuild :>> ', filterdGuild)
+    // const guild = client.guilds.cache.get('317652808641806350')
+    // const { settings } = guild
+    // if (settings._commandPrefix !== '!') {
+    //   guild.commandPrefix = '!'
+    // }
     var list = ['item1', 'item2', 'item3']
-    const guild = client.guilds.cache.get('317652808641806350')
-    const { settings } = guild
-    if (settings._commandPrefix !== '!') {
-      guild.commandPrefix = '!'
-    }
     res.json(list)
   })
 
@@ -75,16 +87,13 @@ client.on('ready', () => {
     }
     try {
       const user = await discordService.getUser(req.headers)
-      const guilds = await discordService.getGuilds(req.headers)
-      const filteredGuilds = guilds.filter((guild) => {
-        if (!!client.guilds.cache.get(guild.id)) {
+      // const guilds = await discordService.getGuilds(req.headers)
+      const filteredGuilds = client.guilds.cache.filter((guild) => {
+        const member = guild.member(user.id)
+        if (!member) {
           return false
         }
-        if (guild.owner) {
-          return true
-        }
-        const permissions = new Permissions(guild.permissions)
-        if (permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
+        if (member.user.id === member.ownerID || member.hasPermission('ADMINISTRATOR')) {
           return true
         }
         return false
@@ -109,17 +118,19 @@ client.on('ready', () => {
     }
     try {
       const { params } = req
-      const userGuilds = await discordService.getGuilds(req.headers)
-      if (!!userGuilds.findIndex((guild) => guild.id === params.id)) {
-        const guild = client.guilds.cache.get(params.id)
-        console.log('guild :>> ', guild)
+      const user = await discordService.getUser(req.headers)
+      const guild = client.guilds.cache.get(params.id)
+      if (!!guild && guild.members.cache.get(user.id)) {
         const guildInfo = {
+          name: guild.name,
+          id: guild.id,
+          icon: guild.icon,
           _commandPrefix: guild._commandPrefix,
         }
+        res.type('json')
         return res.json(guildInfo)
       }
-
-      return res.status(200).send('hello')
+      return res.status(400).send('Bad Request')
     } catch (error) {
       if (error.response) {
         return res.status(error.response.status).send(error.response.statusText)

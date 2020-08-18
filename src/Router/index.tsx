@@ -54,6 +54,7 @@ const RouterContainer = () => {
         <AuthRoute path="/">
           <Layout>
             <Route exact path="/" component={Home} />
+            <Route path="/guild/:id" component={Home} />
           </Layout>
         </AuthRoute>
       </Switch>

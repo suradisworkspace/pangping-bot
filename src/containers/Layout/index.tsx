@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Layout, Menu, Spin, Avatar } from 'antd'
 import { useCookies } from 'react-cookie'
-import { includes } from 'lodash'
 import randomColor from 'randomcolor'
 import serverAPI, { GuildDetailsResponse, UserResponse } from '~/api/server'
 import { UserOutlined, PlusCircleFilled, DatabaseOutlined } from '@ant-design/icons'
@@ -16,7 +15,6 @@ const Template = (props: PropsTypes) => {
   const history = useHistory()
   const store = useStore()
   const { selectedGuild } = store.browserData
-  let selectedServer = ''
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [cookies, setCookie, removeCookie] = useCookies()
   const [loading, setLoading] = useState(true)
@@ -41,10 +39,14 @@ const Template = (props: PropsTypes) => {
     }
   }
 
+  const onGuildClick = (guildId: string) => () => {
+    history.push(`/guild/${guildId}`)
+  }
+
   const logout = () => {
     removeCookie('access_token')
     removeCookie('refresh_token')
-    // removeCookie('uid')
+    store.browserData.setSelectedGuild('')
     history.push('/')
   }
 
@@ -69,7 +71,8 @@ const Template = (props: PropsTypes) => {
         }}
       >
         <div className="logo" />
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={[selectedServer]} defaultOpenKeys={['yourServer']}>
+
+        <Menu theme="dark" mode="inline" defaultOpenKeys={['yourServer']} selectedKeys={[selectedGuild]}>
           <div className="userInfo">
             <Avatar
               className="userInfo-avatar"
@@ -84,10 +87,11 @@ const Template = (props: PropsTypes) => {
             </div>
           </div>
           <Menu.Item icon={<PlusCircleFilled />}>Add Bot</Menu.Item>
-          <SubMenu key="yourServer" icon={<DatabaseOutlined />} title="Manage Bot">
+          <SubMenu key={'yourServer'} icon={<DatabaseOutlined />} title="Manage Bot">
             {guilds.map((guild) => (
               <Menu.Item
                 className="server-list"
+                onClick={onGuildClick(guild.id)}
                 key={guild.id}
                 icon={
                   <Avatar
