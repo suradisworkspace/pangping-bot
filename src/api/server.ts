@@ -25,10 +25,12 @@ export type UserResponse = {
 }
 
 export type GuildConfigResponse = {
-  _commandPrefix: string
   id: string
   name: string
-  iconL: string
+  icon: string
+  settings: {
+    _commandPrefix: string
+  }
 }
 
 export default {

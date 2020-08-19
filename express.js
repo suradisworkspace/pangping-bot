@@ -2,7 +2,7 @@ const path = require('path')
 const express = require('express')
 const { CommandoClient } = require('discord.js-commando')
 const KeyvProvider = require('commando-provider-keyv')
-const { validationResult, header } = require('express-validator')
+const { validationResult, header, body } = require('express-validator')
 const Keyv = require('keyv')
 const discordService = require('./services/discord')
 const cookieParser = require('cookie-parser')
@@ -111,7 +111,9 @@ client.on('ready', () => {
           name: guild.name,
           id: guild.id,
           icon: guild.icon,
-          _commandPrefix: guild._commandPrefix,
+          settings: {
+            _commandPrefix: guild._commandPrefix,
+          },
         }
         res.type('json')
         return res.json(guildInfo)
@@ -124,6 +126,21 @@ client.on('ready', () => {
       return res.status(500).send('Internal Server Error')
     }
   })
+
+  app.post(
+    '/api/customCommand',
+    [...discordValidator, body('id').not().isEmpty(), body('command').not().isEmpty(), body('url').not().isEmpty()],
+    async (req, res) => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        // IMPLEMENT HERE
+        // handle error here
+        return res.status(400).send('400 Bad Request')
+      }
+      // IMPLEMENT HERE
+      const { body, headers } = req
+    }
+  )
 
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname + '/build/index.html'))
