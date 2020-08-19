@@ -24,6 +24,13 @@ export type UserResponse = {
   public_flags?: Number
 }
 
+export type GuildConfigResponse = {
+  _commandPrefix: string
+  id: string
+  name: string
+  iconL: string
+}
+
 export default {
   userInfo: () => {
     type UserInfoResponse = {
@@ -34,13 +41,6 @@ export default {
   },
   guild: {
     getSettings: (guildId: string) => {
-      console.log('guildId', guildId)
-      type GuildConfigResponse = {
-        _commandPrefix: string
-        id: string
-        name: string
-        iconL: string
-      }
       return axios.get<GuildConfigResponse>(`/api/guild/${guildId}`).then((res) => res.data)
     },
   },

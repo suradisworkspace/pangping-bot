@@ -6,7 +6,7 @@ import randomColor from 'randomcolor'
 import serverAPI, { GuildDetailsResponse, UserResponse } from '~/api/server'
 import { UserOutlined, PlusCircleFilled, DatabaseOutlined } from '@ant-design/icons'
 import { useStore } from '~/helpers/mobx'
-import './style.css'
+import styles from './styles'
 
 const { Header, Content, Footer, Sider } = Layout
 const { SubMenu } = Menu
@@ -52,14 +52,14 @@ const Template = (props: PropsTypes) => {
 
   if (loading) {
     return (
-      <div className="loading-container">
+      <div className={styles.loadingContainer}>
         <Spin size="large" />
       </div>
     )
   }
 
   return (
-    <Layout className="theme-container">
+    <Layout className={styles.themeContainer}>
       <Sider
         breakpoint="lg"
         collapsedWidth="0"
@@ -70,12 +70,10 @@ const Template = (props: PropsTypes) => {
           console.log(collapsed, type)
         }}
       >
-        <div className="logo" />
-
         <Menu theme="dark" mode="inline" defaultOpenKeys={['yourServer']} selectedKeys={[selectedGuild]}>
-          <div className="userInfo">
+          <div className={styles.userInfo}>
             <Avatar
-              className="userInfo-avatar"
+              className={styles.userInfoAvatar}
               size={45}
               src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`}
             >
@@ -90,13 +88,13 @@ const Template = (props: PropsTypes) => {
           <SubMenu key={'yourServer'} icon={<DatabaseOutlined />} title="Manage Bot">
             {guilds.map((guild) => (
               <Menu.Item
-                className="server-list"
+                className={styles.serverList}
                 onClick={onGuildClick(guild.id)}
                 key={guild.id}
                 icon={
                   <Avatar
                     src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`}
-                    className="server-list-image"
+                    className={styles.serverListImage}
                     size={28}
                     style={{
                       backgroundColor: randomColor(),

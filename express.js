@@ -3,7 +3,6 @@ const express = require('express')
 const { CommandoClient } = require('discord.js-commando')
 const KeyvProvider = require('commando-provider-keyv')
 const { validationResult, header } = require('express-validator')
-const { Permissions } = require('discord.js')
 const Keyv = require('keyv')
 const discordService = require('./services/discord')
 const cookieParser = require('cookie-parser')
@@ -59,23 +58,10 @@ client.on('ready', () => {
   })
 
   app.get('/api/test', (req, res) => {
-    const filterdGuild = client.guilds.cache.filter((guild) => {
-      const member = guild.member('265037333915631616')
-      if (!member) {
-        return false
-      }
-      if (member.user.id === member.ownerID || member.hasPermission('ADMINISTRATOR')) {
-        return true
-      }
-      return false
-    })
-
-    console.log('filterdGuild :>> ', filterdGuild)
     // const guild = client.guilds.cache.get('317652808641806350')
     // const { settings } = guild
-    // if (settings._commandPrefix !== '!') {
-    //   guild.commandPrefix = '!'
-    // }
+    console.log('client.provider :>> ', client.provider)
+    client.provider.set('317652808641806350', 'someThing', 'test')
     var list = ['item1', 'item2', 'item3']
     res.json(list)
   })
