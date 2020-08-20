@@ -1,13 +1,13 @@
 const path = require('path')
 const express = require('express')
-const { get } = require('lodash')
-const { CommandoClient, GuildSettingsHelper } = require('discord.js-commando')
+const { CommandoClient } = require('discord.js-commando')
 const KeyvProvider = require('commando-provider-keyv')
-const { validationResult, header, body, data } = require('express-validator')
+const { validationResult, header, body } = require('express-validator')
 const Keyv = require('keyv')
 const discordService = require('./services/discord')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
+const checkAdmin = require('./utils/checkAdmin')
 const settings = { serialize: (data) => data, deserialize: (data) => data, namespace: 'users', collection: 'settings' }
 require('dotenv').config()
 // DISCORD
@@ -76,17 +76,9 @@ client.on('ready', () => {
     }
     try {
       const user = await discordService.getUser(req.headers)
+      console.log('user :>> ', user)
       // const guilds = await discordService.getGuilds(req.headers)
-      const filteredGuilds = client.guilds.cache.filter((guild) => {
-        const member = guild.member(user.id)
-        if (!member) {
-          return false
-        }
-        if (member.user.id === member.ownerID || member.hasPermission('ADMINISTRATOR')) {
-          return true
-        }
-        return false
-      })
+      const filteredGuilds = client.guilds.cache.filter((guild) => checkAdmin(guild, user.id))
       res.type('json')
       return res.json({
         user,
@@ -109,19 +101,23 @@ client.on('ready', () => {
       const { params } = req
       const user = await discordService.getUser(req.headers)
       const guild = client.guilds.cache.get(params.id)
-      if (!!guild && guild.members.cache.get(user.id)) {
+      if (!guild) {
+        return res.status(400).send('Bad Request')
+      }
+      if (checkAdmin(guild, user.id)) {
         const guildInfo = {
           name: guild.name,
           id: guild.id,
           icon: guild.icon,
           settings: {
-            _commandPrefix: guild._commandPrefix,
+            commandPrefix: guild.commandPrefix,
           },
+          customCommands: await guild.settings.get('customCommands', {}),
         }
         res.type('json')
         return res.json(guildInfo)
       }
-      return res.status(400).send('Bad Request')
+      return res.status(401).send('Unauthorized')
     } catch (error) {
       if (error.response) {
         return res.status(error.response.status).send(error.response.statusText)
@@ -129,6 +125,32 @@ client.on('ready', () => {
       return res.status(500).send('Internal Server Error')
     }
   })
+
+  app.post(
+    '/api/editSettings',
+    [...discordValidator, body('id').not().isEmpty(), body('commandPrefix').not().isEmpty()],
+    async (req, res) => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        return res.status(400).send('Bad Request')
+      }
+      try {
+        const { body, headers } = req
+        const user = await discordService.getUser(headers)
+        const guild = client.guilds.cache.get(body.id)
+        if (!guild) {
+          return res.status(400).send('Bad Request')
+        }
+        if (checkAdmin(guild, user.id)) {
+          const { commandPrefix, ...restBody } = req.body
+          if (commandPrefix) {
+            guild.commandPrefix = commandPrefix
+          }
+        }
+        return res.status(401).send('Unauthorized')
+      } catch (error) {}
+    }
+  )
 
   app.post(
     '/api/addCustomCommand',
@@ -139,28 +161,31 @@ client.on('ready', () => {
         // IMPLEMENT HERE
         // handle error here
 
-        return res.status(400).send('400 Bad Request')
+        return res.status(400).send('Bad Request')
       }
-      // IMPLEMENT HERE
       const { body, headers } = req
-      const userInfo = discordService.getUser(headers)
+      const user = await discordService.getUser(headers)
       const guild = client.guilds.cache.get(body.id)
-      if (guild.members.cache.get(userInfo.id)) {
-        return res.status(401).send('Unauthorized')
+      if (!guild) {
+        return res.status(400).send('Bad Request')
       }
-      const customCommands = await guild.settings.get('customCommands', {})
-      if (customCommands[body.command]) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'duplicated command',
-        })
-      }
-      await guild.settings.set('customCommands', {
-        ...(await guild.settings.get('customCommands', {})),
-        [body.command]: body.url,
-      })
+      if (checkAdmin(guild, user.id)) {
+        const customCommands = await guild.settings.get('customCommands', {})
+        if (customCommands[body.command]) {
+          return res.status(400).json({
+            status: 'error',
+            message: 'duplicated command',
+          })
+        }
+        const newCustomCommands = {
+          ...(await guild.settings.get('customCommands', {})),
+          [body.command]: body.url,
+        }
+        await guild.settings.set('customCommands', newCustomCommands)
 
-      return res.status(200).send('ok')
+        return res.status(200).json(newCustomCommands)
+      }
+      return res.status(401).send('Unauthorized')
     }
   )
 

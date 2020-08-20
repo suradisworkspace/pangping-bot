@@ -29,7 +29,10 @@ export type GuildConfigResponse = {
   name: string
   icon: string
   settings: {
-    _commandPrefix?: string
+    commandPrefix?: string
+  }
+  customCommand: {
+    [key: string]: string
   }
 }
 
