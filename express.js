@@ -143,7 +143,11 @@ client.on('ready', () => {
       }
       // IMPLEMENT HERE
       const { body, headers } = req
+      const userInfo = discordService.getUser(headers)
       const guild = client.guilds.cache.get(body.id)
+      if (guild.members.cache.get(userInfo.id)) {
+        return res.status(401).send('Unauthorized')
+      }
       const customCommands = await guild.settings.get('customCommands', {})
       if (customCommands[body.command]) {
         return res.status(400).json({
