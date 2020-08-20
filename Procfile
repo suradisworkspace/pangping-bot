@@ -1,1 +1,1 @@
-web: node express.ts
+web: node express.js
