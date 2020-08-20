@@ -38,6 +38,11 @@ const Template = (props: PropsTypes) => {
       setLoading(false)
     }
   }
+  const onAddBot = () => {
+    const url =
+      'https://discord.com/api/oauth2/authorize?client_id=701046332835758101&permissions=3147840&redirect_uri=https%3A%2F%2Fdj-pangping.herokuapp.com%2F&scope=bot'
+    window.open(url, '_self')
+  }
 
   const onGuildClick = (guildId: string) => () => {
     history.push(`/guild/${guildId}`)
@@ -84,7 +89,9 @@ const Template = (props: PropsTypes) => {
               <b>{user.username}</b>
             </div>
           </div>
-          <Menu.Item icon={<PlusCircleFilled />}>Add Bot</Menu.Item>
+          <Menu.Item icon={<PlusCircleFilled />} onClick={onAddBot}>
+            Add Bot
+          </Menu.Item>
           <SubMenu key={'yourServer'} icon={<DatabaseOutlined />} title="Manage Bot">
             {guilds.map((guild) => (
               <Menu.Item
