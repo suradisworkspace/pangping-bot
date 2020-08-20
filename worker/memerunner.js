@@ -1,9 +1,14 @@
 const ytdl = require('ytdl-core')
 const runMusic = require('./runMusic')
 const deleteMsg = require('../utils/deleteMsg')
-const HttpsProxyAgent = require('https-proxy-agent')
-const proxy = process.env.QUOTAGUARD_URL
-const agent = proxy ? HttpsProxyAgent(proxy) : null
+
+const youtubeHeader = {
+  requestOptions: {
+    headers: {
+      Cookie: process.env.YOUTUBE_COOKIE,
+    },
+  },
+}
 
 module.exports = async (msg, queue, serverQ, url) => {
   const voiceChannel = msg.member.voice.channel
@@ -16,11 +21,7 @@ module.exports = async (msg, queue, serverQ, url) => {
 
   let song
   try {
-    const query = agent
-      ? await ytdl.getInfo(url, {
-          requestOptions: { agent },
-        })
-      : await ytdl.getInfo(url)
+    const query = await ytdl.getInfo(url, youtubeHeader)
     song = {
       title: query.title,
       url: query.video_url,

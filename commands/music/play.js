@@ -5,10 +5,13 @@ const { Command } = require('discord.js-commando')
 const ytsr = require('ytsr')
 const deleteMsg = require('../../utils/deleteMsg')
 const { dropWhile, head } = require('lodash')
-const HttpsProxyAgent = require('https-proxy-agent')
-const proxy = process.env.QUOTAGUARD_URL
-const agent = proxy ? HttpsProxyAgent(proxy) : null
-
+const youtubeHeader = {
+  requestOptions: {
+    headers: {
+      Cookie: process.env.YOUTUBE_COOKIE,
+    },
+  },
+}
 module.exports = class play extends Command {
   constructor(client) {
     super(client, {
@@ -37,7 +40,7 @@ module.exports = class play extends Command {
       index = parseInt(foundedIndex[0].replace('&index=', '')) - 1
     }
     try {
-      const res = await ytpl(searchQuery)
+      const res = await ytpl(searchQuery, youtubeHeader)
       const song = res.items.slice(index).map((item) => ({
         title: item.title,
         url: item.url_simple,
@@ -46,11 +49,7 @@ module.exports = class play extends Command {
       return { playlistName: res.title, song }
     } catch (e) {
       if (ytdl.validateURL(searchQuery)) {
-        const query = agent
-          ? await ytdl.getInfo(searchQuery, {
-              requestOptions: { agent },
-            })
-          : await ytdl.getInfo(searchQuery)
+        const query = await ytdl.getInfo(searchQuery, youtubeHeader)
         const song = [
           {
             title: query.title,
@@ -85,11 +84,7 @@ module.exports = class play extends Command {
       let query
       try {
         if (ytdl.validateURL(searchQuery)) {
-          query = agent
-            ? await ytdl.getInfo(searchQuery, {
-                requestOptions: { agent },
-              })
-            : await ytdl.getInfo(searchQuery)
+          query = await ytdl.getInfo(searchQuery, youtubeHeader)
           song = [
             {
               title: query.title,
