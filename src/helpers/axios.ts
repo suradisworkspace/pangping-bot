@@ -19,8 +19,6 @@ instance.interceptors.request.use(
     // const uid = cookies.get('uid')
     config.headers = {
       Authorization: `Bearer ${accessToken}`,
-      Accept: 'application/json',
-      'Content-Type': 'application/x-www-form-urlencoded',
     }
     // config.data = {
     //   uid,

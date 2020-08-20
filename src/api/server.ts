@@ -29,7 +29,7 @@ export type GuildConfigResponse = {
   name: string
   icon: string
   settings: {
-    _commandPrefix: string
+    _commandPrefix?: string
   }
 }
 
@@ -44,6 +44,13 @@ export default {
   guild: {
     getSettings: (guildId: string) => {
       return axios.get<GuildConfigResponse>(`/api/guild/${guildId}`).then((res) => res.data)
+    },
+  },
+  settings: {
+    customCommands: {
+      add: (id: string, command: string, url: string) => {
+        return axios.post('/api/addCustomCommand', { id, command, url }).then((res) => res.data)
+      },
     },
   },
 }

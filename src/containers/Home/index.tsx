@@ -15,7 +15,13 @@ const Home = () => {
 
   const store = useStore()
 
-  const [guildSettings, setGuildSettings] = useState(null as GuildConfigResponse | null)
+  const initSettings: GuildConfigResponse = {
+    id: '',
+    name: '',
+    icon: '',
+    settings: {},
+  }
+  const [guildSettings, setGuildSettings] = useState(initSettings as GuildConfigResponse)
   const [isLoading, setIsLoading] = useState(false)
   const [isShowAddCustom, setIsShowAddCustom] = useState(false)
   const [addCustomForm] = Form.useForm()
@@ -42,7 +48,7 @@ const Home = () => {
             store.browserData.setSelectedGuild(settings.id)
             return
           }
-          setGuildSettings(null)
+          setGuildSettings(initSettings)
         }
       }
     } catch (error) {
@@ -56,7 +62,13 @@ const Home = () => {
     addCustomForm.resetFields()
   }
 
-  const onAddForm = () => {}
+  const onAddForm = async () => {
+    try {
+      const { command, url } = addCustomForm.getFieldsValue()
+      await serverAPI.settings.customCommands.add(guildSettings.id, command, url)
+      setIsShowAddCustom(false)
+    } catch (error) {}
+  }
 
   // Loading
   if (isLoading) {
@@ -67,9 +79,17 @@ const Home = () => {
     )
   }
 
+  if (!guildSettings.id) {
+    return (
+      <div>
+        <h1>add bot first</h1>
+      </div>
+    )
+  }
+
   return (
     <div>
-      <h1>{guildSettings?.name}</h1>
+      <h1>{guildSettings.name}</h1>
       <Tabs defaultActiveKey="settings">
         <TabPane tab="Settings" key="settings">
           <h2>settings</h2>
@@ -94,7 +114,7 @@ const Home = () => {
         <Form form={addCustomForm} onFinish={onAddForm}>
           <Form.Item
             label="Command Name"
-            name="commandName"
+            name="command"
             rules={[
               {
                 required: true,
@@ -106,7 +126,7 @@ const Home = () => {
           </Form.Item>
           <Form.Item
             label="Youtube Url"
-            name="youtubeUrl"
+            name="url"
             rules={[
               {
                 required: true,

@@ -1,11 +1,13 @@
 const path = require('path')
 const express = require('express')
-const { CommandoClient } = require('discord.js-commando')
+const { get } = require('lodash')
+const { CommandoClient, GuildSettingsHelper } = require('discord.js-commando')
 const KeyvProvider = require('commando-provider-keyv')
-const { validationResult, header, body } = require('express-validator')
+const { validationResult, header, body, data } = require('express-validator')
 const Keyv = require('keyv')
 const discordService = require('./services/discord')
 const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
 const settings = { serialize: (data) => data, deserialize: (data) => data, namespace: 'users', collection: 'settings' }
 require('dotenv').config()
 // DISCORD
@@ -13,7 +15,7 @@ const queue = new Map()
 
 const client = new CommandoClient({
   commandPrefix: '!',
-  unknownCommandResponse: false,
+  unknownCommandResponse: true,
   owner: '265037333915631616',
   disableEveryone: true,
   queue,
@@ -24,7 +26,7 @@ const discordValidator = [header('authorization').not().isEmpty()]
 client.registry
   .registerDefaultTypes()
   .registerDefaultGroups()
-  .registerDefaultCommands({ help: false })
+  .registerDefaultCommands({ help: false, unknownCommand: false })
   .registerGroups([
     ['basic', 'Basic'],
     ['music', 'Music Controller'],
@@ -40,14 +42,15 @@ client.on('ready', () => {
       req.headers = {
         ...req.headers,
         authorization: `Bearer ${req.cookies.access_token}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
       }
     }
     next()
   }
 
-  app.use([cookieParser(), cookiesHeaders])
+  app.use(express.json())
+  app.use(cookieParser())
+  app.use(bodyParser.urlencoded({ extended: true }))
+  app.use(cookiesHeaders)
 
   app.use(express.static(path.join(__dirname, '/build')))
 
@@ -128,17 +131,32 @@ client.on('ready', () => {
   })
 
   app.post(
-    '/api/customCommand',
+    '/api/addCustomCommand',
     [...discordValidator, body('id').not().isEmpty(), body('command').not().isEmpty(), body('url').not().isEmpty()],
     async (req, res) => {
       const errors = validationResult(req)
       if (!errors.isEmpty()) {
         // IMPLEMENT HERE
         // handle error here
+
         return res.status(400).send('400 Bad Request')
       }
       // IMPLEMENT HERE
       const { body, headers } = req
+      const guild = client.guilds.cache.get(body.id)
+      const customCommands = await guild.settings.get('customCommands', {})
+      if (customCommands[body.command]) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'duplicated command',
+        })
+      }
+      await guild.settings.set('customCommands', {
+        ...(await guild.settings.get('customCommands', {})),
+        [body.command]: body.url,
+      })
+
+      return res.status(200).send('ok')
     }
   )
 
