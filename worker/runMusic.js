@@ -22,6 +22,7 @@ const run = (queue, guild, song) => {
     const dispatcher = serverQ.connection
       .play(
         ytdl(song.url, {
+          ...youtubeHeader,
           quality: 'highestaudio',
           highWaterMark: 1024 * 1024 * 10,
         })
