@@ -5,6 +5,9 @@ const { Command } = require('discord.js-commando')
 const ytsr = require('ytsr')
 const deleteMsg = require('../../utils/deleteMsg')
 const { dropWhile, head } = require('lodash')
+const HttpsProxyAgent = require('https-proxy-agent')
+const proxy = process.env.QUOTAGUARD_URL
+const agent = proxy ? HttpsProxyAgent(proxy) : null
 
 module.exports = class play extends Command {
   constructor(client) {
@@ -43,7 +46,11 @@ module.exports = class play extends Command {
       return { playlistName: res.title, song }
     } catch (e) {
       if (ytdl.validateURL(searchQuery)) {
-        const query = await ytdl.getInfo(searchQuery)
+        const query = agent
+          ? await ytdl.getInfo(searchQuery, {
+              requestOptions: { agent },
+            })
+          : await ytdl.getInfo(searchQuery)
         const song = [
           {
             title: query.title,
@@ -78,7 +85,11 @@ module.exports = class play extends Command {
       let query
       try {
         if (ytdl.validateURL(searchQuery)) {
-          query = await ytdl.getInfo(searchQuery)
+          query = agent
+            ? await ytdl.getInfo(searchQuery, {
+                requestOptions: { agent },
+              })
+            : await ytdl.getInfo(searchQuery)
           song = [
             {
               title: query.title,

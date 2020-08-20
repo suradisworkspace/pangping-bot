@@ -1,5 +1,8 @@
 const Discord = require('discord.js')
 const ytdl = require('ytdl-core')
+const HttpsProxyAgent = require('https-proxy-agent')
+const proxy = process.env.QUOTAGUARD_URL
+const agent = proxy ? HttpsProxyAgent(proxy) : null
 // const secondToTime = require('../utils/secondToTime')
 // const axios = require('axios')
 
@@ -57,9 +60,17 @@ const run = (queue, guild, song) => {
           //   thumbnail:
           //     query.player_response.videoDetails.thumbnail.thumbnails[0].url,
           // };
-          const res = await ytdl.getInfo(tempSongs.url)
+          const res = agent
+            ? await ytdl.getInfo(tempSongs.url, {
+                requestOptions: { agent },
+              })
+            : await ytdl.getInfo(tempSongs.url)
           if (res.related_videos.length) {
-            const query = await ytdl.getInfo(res.related_videos[0].id)
+            const query = agent
+              ? await ytdl.getInfo(res.related_videos[0].id, {
+                  requestOptions: { agent },
+                })
+              : await ytdl.getInfo(res.related_videos[0].id)
             song = {
               title: query.title,
               url: query.video_url,
