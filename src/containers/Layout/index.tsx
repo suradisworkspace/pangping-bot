@@ -40,7 +40,7 @@ const Template = (props: PropsTypes) => {
   }
   const onAddBot = () => {
     const url =
-      'https://discord.com/api/oauth2/authorize?client_id=701046332835758101&permissions=3147840&redirect_uri=https%3A%2F%2Fdj-pangping.herokuapp.com%2F&scope=bot'
+      'https://discord.com/api/oauth2/authorize?client_id=701046332835758101&permissions=3147840&redirect_uri=https%3A%2F%2Fpangping.herokuapp.com%2F&scope=bot'
     window.open(url, '_self')
   }
 

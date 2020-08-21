@@ -20,6 +20,7 @@ const Home = () => {
     name: '',
     icon: '',
     settings: {},
+    customCommand: {},
   }
   const [guildSettings, setGuildSettings] = useState(initSettings as GuildConfigResponse)
   const [isLoading, setIsLoading] = useState(false)
