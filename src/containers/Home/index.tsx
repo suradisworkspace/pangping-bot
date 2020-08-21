@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Spin, Tabs, Button, Modal, Form, Input } from 'antd'
 import { PlusCircleFilled } from '@ant-design/icons'
+import ytdl from 'ytdl-core'
 import serverAPI, { GuildConfigResponse } from '~/api/server'
 import { useStore } from '~/helpers/mobx'
 import styles from './styles'
@@ -63,6 +64,26 @@ const Home = () => {
     addCustomForm.resetFields()
   }
 
+  const checkCommand = (rule: any, value: string, callback: Function) => {
+    if (!value) {
+      return callback([new Error('Please input command name')])
+    }
+    if (value.indexOf(' ') >= 0) {
+      return callback([new Error('no space')])
+    }
+    return callback()
+  }
+
+  const checkYoutubeUrl = (rule: any, value: string, callback: Function) => {
+    if (!value) {
+      return callback([new Error('Please input youtube url')])
+    }
+    if (!ytdl.validateURL(value)) {
+      return callback([new Error('Invalid youtube url')])
+    }
+    return callback
+  }
+
   const onAddForm = async () => {
     try {
       const { command, url } = addCustomForm.getFieldsValue()
@@ -118,8 +139,7 @@ const Home = () => {
             name="command"
             rules={[
               {
-                required: true,
-                message: 'Please input command name',
+                validator: checkCommand,
               },
             ]}
           >
@@ -130,8 +150,7 @@ const Home = () => {
             name="url"
             rules={[
               {
-                required: true,
-                message: 'Please input youtube url',
+                validator: checkYoutubeUrl,
               },
             ]}
           >

@@ -4,6 +4,7 @@ const { CommandoClient } = require('discord.js-commando')
 const KeyvProvider = require('commando-provider-keyv')
 const { validationResult, header, body } = require('express-validator')
 const Keyv = require('keyv')
+const ytdl = require('ytdl-core')
 const discordService = require('./services/discord')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
@@ -76,7 +77,6 @@ client.on('ready', () => {
     }
     try {
       const user = await discordService.getUser(req.headers)
-      console.log('user :>> ', user)
       // const guilds = await discordService.getGuilds(req.headers)
       const filteredGuilds = client.guilds.cache.filter((guild) => checkAdmin(guild, user.id))
       res.type('json')
@@ -166,7 +166,7 @@ client.on('ready', () => {
       const { body, headers } = req
       const user = await discordService.getUser(headers)
       const guild = client.guilds.cache.get(body.id)
-      if (!guild) {
+      if (!guild || !ytdl.validateURL(body.url) || body.commad.indexOf(' ') === -1) {
         return res.status(400).send('Bad Request')
       }
       if (checkAdmin(guild, user.id)) {
