@@ -47,7 +47,6 @@ const Home = () => {
         const userInfo = await serverAPI.userInfo()
         selectedGuild = userInfo.guilds[0].id
       }
-      console.log('selectedGuild :>> ', selectedGuild)
       const settings = await serverAPI.guild.getSettings(selectedGuild)
       setGuildSettings(settings)
       store.browserData.setSelectedGuild(settings.id)

@@ -24,12 +24,14 @@ const Validate = () => {
       history.push('/')
     }
     try {
+      const { protocol, hostname, port } = window.location
+      const isDevMode = process.env.REACT_APP_MODE === 'dev'
       const res = await axios.post(
         'https://discord.com/api/oauth2/token',
         queryString.stringify({
           client_id: discordClient.clientId,
           client_secret: process.env.REACT_APP_CLIENT_SECRET,
-          redirect_uri: process.env.REACT_APP_REDIRECT_URI,
+          redirect_uri: `${protocol}//${hostname}${isDevMode ? `:${port}` : ''}/validate`,
           scope: 'identify',
           grant_type: 'authorization_code',
           code: params.code,
@@ -52,7 +54,6 @@ const Validate = () => {
         history.push('/login')
       }
     } catch (err) {
-      console.log('err :>> ', err)
       history.push('/login')
     }
   }

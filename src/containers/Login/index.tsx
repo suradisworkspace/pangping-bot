@@ -5,12 +5,6 @@ import crypto from 'crypto'
 import DiscordOauth2 from 'discord-oauth2'
 import discordClient from '~/discordOauth'
 
-const oauth = new DiscordOauth2({
-  clientId: discordClient.clientId,
-  clientSecret: process.env.REACT_APP_CLIENT_SECRET,
-  redirectUri: process.env.REACT_APP_REDIRECT_URI,
-})
-
 const Background = styled.div`
   background: rgb(44, 62, 80);
   background: linear-gradient(180deg, rgba(44, 62, 80, 1) 0%, rgba(253, 116, 108, 1) 100%);
@@ -38,6 +32,13 @@ const LoginTitle = styled.h1`
 
 const Login = () => {
   const login = () => {
+    const { protocol, hostname, port } = window.location
+    const isDevMode = process.env.REACT_APP_MODE === 'dev'
+    const oauth = new DiscordOauth2({
+      clientId: discordClient.clientId,
+      clientSecret: process.env.REACT_APP_CLIENT_SECRET,
+      redirectUri: `${protocol}//${hostname}${isDevMode ? `:${port}` : ''}/validate`,
+    })
     const url = oauth.generateAuthUrl({
       scope: ['identify'],
       state: crypto.randomBytes(16).toString('hex'), // Be aware that randomBytes is sync if no callback is provided

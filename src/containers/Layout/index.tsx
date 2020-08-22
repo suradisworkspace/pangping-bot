@@ -7,6 +7,7 @@ import { Observer } from 'mobx-react'
 import serverAPI, { GuildDetailsResponse, UserResponse } from '~/api/server'
 import { UserOutlined, PlusCircleFilled, DatabaseOutlined } from '@ant-design/icons'
 import { useStore } from '~/helpers/mobx'
+import discordOauth from '~/discordOauth'
 import styles from './styles'
 
 const { Header, Content, Footer, Sider } = Layout
@@ -40,9 +41,14 @@ const Template = (props: PropsTypes) => {
     }
   }
   const onAddBot = () => {
-    const url =
-      'https://discord.com/api/oauth2/authorize?client_id=701046332835758101&permissions=3147840&redirect_uri=https%3A%2F%2Fpangping.herokuapp.com%2F&scope=bot'
-    window.open(url, '_self')
+    const { protocol, hostname, port } = window.location
+    const isDevMode = process.env.REACT_APP_MODE === 'dev'
+    const url = new URL('https://discord.com/api/oauth2/authorize')
+    url.searchParams.append('client_id', discordOauth.clientId)
+    url.searchParams.append('permissions', '3147840')
+    url.searchParams.append('redirect_uri', `${protocol}//${hostname}${isDevMode ? `:${port}` : ''}`)
+    url.searchParams.append('scope', 'bot')
+    window.open(url.href, '_self')
   }
 
   const onGuildClick = (guildId: string) => () => {
