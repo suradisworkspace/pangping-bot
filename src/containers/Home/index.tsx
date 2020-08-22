@@ -41,18 +41,17 @@ const Home = () => {
         setGuildSettings(settings)
         store.browserData.setSelectedGuild(params.id)
         return
-      } else {
-        if (!store.browserData.selectedGuild) {
-          const userInfo = await serverAPI.userInfo()
-          if (!!userInfo.guilds.length) {
-            const settings = await serverAPI.guild.getSettings(userInfo.guilds[0].id)
-            setGuildSettings(settings)
-            store.browserData.setSelectedGuild(settings.id)
-            return
-          }
-          setGuildSettings(initSettings)
-        }
       }
+      let selectedGuild = store.browserData.selectedGuild
+      if (!selectedGuild) {
+        const userInfo = await serverAPI.userInfo()
+        selectedGuild = userInfo.guilds[0].id
+      }
+      console.log('selectedGuild :>> ', selectedGuild)
+      const settings = await serverAPI.guild.getSettings(selectedGuild)
+      setGuildSettings(settings)
+      store.browserData.setSelectedGuild(settings.id)
+      return
     } catch (error) {
     } finally {
       setIsLoading(false)

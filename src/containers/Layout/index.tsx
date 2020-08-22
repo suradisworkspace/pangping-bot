@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom'
 import { Layout, Menu, Spin, Avatar } from 'antd'
 import { useCookies } from 'react-cookie'
 import randomColor from 'randomcolor'
+import { Observer } from 'mobx-react'
 import serverAPI, { GuildDetailsResponse, UserResponse } from '~/api/server'
 import { UserOutlined, PlusCircleFilled, DatabaseOutlined } from '@ant-design/icons'
 import { useStore } from '~/helpers/mobx'
@@ -11,10 +12,10 @@ import styles from './styles'
 const { Header, Content, Footer, Sider } = Layout
 const { SubMenu } = Menu
 type PropsTypes = { children: React.ReactNode }
+
 const Template = (props: PropsTypes) => {
   const history = useHistory()
   const store = useStore()
-  const { selectedGuild } = store.browserData
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [cookies, setCookie, removeCookie] = useCookies()
   const [loading, setLoading] = useState(true)
@@ -75,50 +76,59 @@ const Template = (props: PropsTypes) => {
           console.log(collapsed, type)
         }}
       >
-        <Menu theme="dark" mode="inline" defaultOpenKeys={['yourServer']} selectedKeys={[selectedGuild]}>
-          <div className={styles.userInfo}>
-            <Avatar
-              className={styles.userInfoAvatar}
-              size={45}
-              src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`}
+        <Observer
+          render={() => (
+            <Menu
+              theme="dark"
+              mode="inline"
+              defaultOpenKeys={['yourServer']}
+              selectedKeys={[store.browserData.selectedGuild]}
             >
-              {user.username.charAt(0)}
-            </Avatar>
-            <div>
-              <p>logged in as:</p>
-              <b>{user.username}</b>
-            </div>
-          </div>
-          <Menu.Item icon={<PlusCircleFilled />} onClick={onAddBot}>
-            Add Bot
-          </Menu.Item>
-          <SubMenu key={'yourServer'} icon={<DatabaseOutlined />} title="Manage Bot">
-            {guilds.map((guild) => (
-              <Menu.Item
-                className={styles.serverList}
-                onClick={onGuildClick(guild.id)}
-                key={guild.id}
-                icon={
-                  <Avatar
-                    src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`}
-                    className={styles.serverListImage}
-                    size={28}
-                    style={{
-                      backgroundColor: randomColor(),
-                    }}
-                  >
-                    {guild.name.charAt(0)}
-                  </Avatar>
-                }
-              >
-                {guild.name}
+              <div className={styles.userInfo}>
+                <Avatar
+                  className={styles.userInfoAvatar}
+                  size={45}
+                  src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`}
+                >
+                  {user.username.charAt(0)}
+                </Avatar>
+                <div>
+                  <p>logged in as:</p>
+                  <b>{user.username}</b>
+                </div>
+              </div>
+              <Menu.Item icon={<PlusCircleFilled />} onClick={onAddBot}>
+                Add Bot
               </Menu.Item>
-            ))}
-          </SubMenu>
-          <Menu.Item icon={<UserOutlined />} onClick={logout}>
-            Log out
-          </Menu.Item>
-        </Menu>
+              <SubMenu key={'yourServer'} icon={<DatabaseOutlined />} title="Manage Bot">
+                {guilds.map((guild) => (
+                  <Menu.Item
+                    className={styles.serverList}
+                    onClick={onGuildClick(guild.id)}
+                    key={guild.id}
+                    icon={
+                      <Avatar
+                        src={`https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`}
+                        className={styles.serverListImage}
+                        size={28}
+                        style={{
+                          backgroundColor: randomColor(),
+                        }}
+                      >
+                        {guild.name.charAt(0)}
+                      </Avatar>
+                    }
+                  >
+                    {guild.name}
+                  </Menu.Item>
+                ))}
+              </SubMenu>
+              <Menu.Item icon={<UserOutlined />} onClick={logout}>
+                Log out
+              </Menu.Item>
+            </Menu>
+          )}
+        />
       </Sider>
       <Layout>
         <Header className="site-layout-sub-header-background" style={{ padding: 0 }} />

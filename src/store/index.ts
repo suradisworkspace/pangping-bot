@@ -1,3 +1,4 @@
+import { create, IHydrateResult } from 'mobx-persist'
 import BrowserData from './browserData'
 
 const stores = {
@@ -5,3 +6,11 @@ const stores = {
 }
 
 export default stores
+
+const hydrate = create()
+
+const hyrateStores = (): IHydrateResult<Object>[] => {
+  return [hydrate('browserData', stores.browserData)]
+}
+
+export const hydratedStore = hyrateStores()
