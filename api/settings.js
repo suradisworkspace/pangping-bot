@@ -55,10 +55,13 @@ const settings = (app, client) => {
           return res.status(400).send('Bad Request')
         }
         if (checkAdmin(guild, user.id)) {
-          const { commandPrefix, ...restBody } = req.body
+          const { commandPrefix } = req.body
           if (commandPrefix) {
             guild.commandPrefix = commandPrefix
           }
+          return res.status(200).json({
+            commandPrefix,
+          })
         }
         return res.status(401).send('Unauthorized')
       } catch (error) {}

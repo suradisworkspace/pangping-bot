@@ -34,6 +34,10 @@ export type GuildConfigResponse = {
   customCommands: Object
 }
 
+export type SettingsResponse = {
+  commandPrefix: string
+}
+
 export default {
   userInfo: () => {
     type UserInfoResponse = {
@@ -51,6 +55,13 @@ export default {
     customCommands: {
       add: (id: string, command: string, url: string) => {
         return axios.post('/api/addCustomCommand', { id, command, url }).then((res) => res.data)
+      },
+    },
+    common: {
+      editSettings: (id: string, settings: SettingsResponse) => {
+        return axios
+          .post<SettingsResponse>('/api/editSettings', { id, ...settings })
+          .then((res) => res.data)
       },
     },
   },

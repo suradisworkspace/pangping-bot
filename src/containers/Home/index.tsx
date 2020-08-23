@@ -4,7 +4,7 @@ import { Spin, Tabs, Button, Modal, Form, Input } from 'antd'
 import { PlusCircleFilled } from '@ant-design/icons'
 import { map } from 'lodash'
 import ytdl from 'ytdl-core'
-import serverAPI from '~/api/server'
+import serverAPI, { SettingsResponse } from '~/api/server'
 import { useStore } from '~/helpers/mobx'
 import styles from './styles'
 
@@ -27,6 +27,7 @@ const Home = () => {
   const [customCommands, setCustomCommands] = useState({} as Object)
   const [isLoading, setIsLoading] = useState(false)
   const [isShowAddCustom, setIsShowAddCustom] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const [addCustomForm] = Form.useForm()
   const [settingsForm] = Form.useForm()
 
@@ -95,7 +96,15 @@ const Home = () => {
   }
 
   const saveSettings = async () => {
-    console.log('save', settingsForm.getFieldsValue())
+    try {
+      setIsSaving(true)
+      const settings = settingsForm.getFieldsValue() as SettingsResponse
+      const settingsRes = await serverAPI.settings.common.editSettings(guildInfo.id, settings)
+      settingsForm.setFieldsValue(settingsRes)
+    } catch (error) {
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   // Loading
@@ -126,7 +135,9 @@ const Home = () => {
               <Input />
             </Form.Item>
           </Form>
-          <Button onClick={settingsForm.submit}>Save</Button>
+          <Button onClick={settingsForm.submit} loading={isSaving}>
+            Save
+          </Button>
         </TabPane>
         <TabPane tab="Commands" key="commands">
           <h2>Commands</h2>
