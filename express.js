@@ -28,12 +28,12 @@ client.registry
   .registerDefaultTypes()
   .registerDefaultGroups()
   .registerDefaultCommands({ help: false, unknownCommand: false })
-  .registerGroups([
-    ['basic', 'Basic'],
-    ['music', 'Music Controller'],
-    ['meme', 'Meme Collection'],
-  ])
-  .registerCommandsIn(path.join(__dirname, 'commands'))
+// .registerGroups([
+//   ['basic', 'Basic'],
+//   ['music', 'Music Controller'],
+//   ['meme', 'Meme Collection'],
+// ])
+// .registerCommandsIn(path.join(__dirname, 'commands'))
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`)

@@ -31,9 +31,7 @@ export type GuildConfigResponse = {
   settings: {
     commandPrefix?: string
   }
-  customCommand: {
-    [key: string]: string
-  }
+  customCommands: Object
 }
 
 export default {

@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Spin, Tabs, Button, Modal, Form, Input } from 'antd'
 import { PlusCircleFilled } from '@ant-design/icons'
+import { map } from 'lodash'
 import ytdl from 'ytdl-core'
-import serverAPI, { GuildConfigResponse } from '~/api/server'
+import serverAPI from '~/api/server'
 import { useStore } from '~/helpers/mobx'
 import styles from './styles'
 
@@ -16,17 +17,18 @@ const Home = () => {
 
   const store = useStore()
 
-  const initSettings: GuildConfigResponse = {
-    id: '',
-    name: '',
-    icon: '',
-    settings: {},
-    customCommand: {},
-  }
-  const [guildSettings, setGuildSettings] = useState(initSettings as GuildConfigResponse)
+  const [guildInfo, setGuildInfo] = useState(
+    {} as {
+      id: string
+      name: string
+      icon: string
+    }
+  )
+  const [customCommands, setCustomCommands] = useState({} as Object)
   const [isLoading, setIsLoading] = useState(false)
   const [isShowAddCustom, setIsShowAddCustom] = useState(false)
   const [addCustomForm] = Form.useForm()
+  const [settingsForm] = Form.useForm()
 
   useEffect(() => {
     getGuildInfo()
@@ -36,19 +38,21 @@ const Home = () => {
   const getGuildInfo = async () => {
     setIsLoading(true)
     try {
-      if (!!params.id) {
-        const settings = await serverAPI.guild.getSettings(params.id)
-        setGuildSettings(settings)
-        store.browserData.setSelectedGuild(params.id)
-        return
-      }
-      let selectedGuild = store.browserData.selectedGuild
-      if (!selectedGuild) {
+      let selectedGuild = params.id
+      if (!selectedGuild && store.browserData.selectedGuild) {
+        selectedGuild = store.browserData.selectedGuild
+      } else {
         const userInfo = await serverAPI.userInfo()
         selectedGuild = userInfo.guilds[0].id
       }
       const settings = await serverAPI.guild.getSettings(selectedGuild)
-      setGuildSettings(settings)
+      setGuildInfo({
+        id: settings.id,
+        name: settings.name,
+        icon: settings.icon,
+      })
+      settingsForm.setFieldsValue(settings.settings)
+      setCustomCommands(settings.customCommands)
       store.browserData.setSelectedGuild(settings.id)
       return
     } catch (error) {
@@ -85,9 +89,13 @@ const Home = () => {
   const onAddForm = async () => {
     try {
       const { command, url } = addCustomForm.getFieldsValue()
-      await serverAPI.settings.customCommands.add(guildSettings.id, command, url)
+      await serverAPI.settings.customCommands.add(guildInfo.id, command, url)
       setIsShowAddCustom(false)
     } catch (error) {}
+  }
+
+  const saveSettings = async () => {
+    console.log('save', settingsForm.getFieldsValue())
   }
 
   // Loading
@@ -99,7 +107,7 @@ const Home = () => {
     )
   }
 
-  if (!guildSettings.id) {
+  if (!guildInfo.id) {
     return (
       <div>
         <h1>add bot first</h1>
@@ -109,10 +117,16 @@ const Home = () => {
 
   return (
     <div>
-      <h1>{guildSettings.name}</h1>
+      <h1>{guildInfo.name}</h1>
       <Tabs defaultActiveKey="settings">
         <TabPane tab="Settings" key="settings">
           <h2>settings</h2>
+          <Form form={settingsForm} onFinish={saveSettings}>
+            <Form.Item label="Command prefix" name="commandPrefix" rules={[{ required: true, message: 'required' }]}>
+              <Input />
+            </Form.Item>
+          </Form>
+          <Button onClick={settingsForm.submit}>Save</Button>
         </TabPane>
         <TabPane tab="Commands" key="commands">
           <h2>Commands</h2>
@@ -122,6 +136,13 @@ const Home = () => {
           <Button icon={<PlusCircleFilled />} onClick={showAddCustom}>
             Add
           </Button>
+          {map(customCommands, (url, command) => {
+            return (
+              <p>
+                {command}: {url}
+              </p>
+            )
+          })}
         </TabPane>
       </Tabs>
       <Modal
