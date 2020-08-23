@@ -149,9 +149,9 @@ const Home = () => {
           </Button>
           {map(customCommands, (url, command) => {
             return (
-              <p>
-                {command}: {url}
-              </p>
+              <div className={styles.customListInputContainer}>
+                <Input addonBefore={command} disabled value={url.toString()} />
+              </div>
             )
           })}
         </TabPane>

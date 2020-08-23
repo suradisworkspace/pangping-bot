@@ -8,4 +8,7 @@ export default {
     justify-content: center;
     align-items: center;
   `,
+  customListInputContainer: css`
+    pointer-events: none;
+  `,
 }
