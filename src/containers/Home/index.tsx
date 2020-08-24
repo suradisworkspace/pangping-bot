@@ -28,6 +28,8 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isShowAddCustom, setIsShowAddCustom] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [isShowDeleteCommand, setIsShowDeleteCommand] = useState(false)
+  const [selectedDeleteCommand, setSelectedDeleteCommand] = useState('')
   const [addCustomForm] = Form.useForm()
   const [settingsForm] = Form.useForm()
 
@@ -40,11 +42,13 @@ const Home = () => {
     setIsLoading(true)
     try {
       let selectedGuild = params.id
-      if (!selectedGuild && store.browserData.selectedGuild) {
-        selectedGuild = store.browserData.selectedGuild
-      } else {
-        const userInfo = await serverAPI.userInfo()
-        selectedGuild = userInfo.guilds[0].id
+      if (!selectedGuild) {
+        if (store.browserData.selectedGuild) {
+          selectedGuild = store.browserData.selectedGuild
+        } else {
+          const userInfo = await serverAPI.userInfo()
+          selectedGuild = userInfo.guilds[0].id
+        }
       }
       const settings = await serverAPI.guild.getSettings(selectedGuild)
       setGuildInfo({
@@ -107,6 +111,21 @@ const Home = () => {
     }
   }
 
+  const showDeleteCommand = (command: string) => () => {
+    setSelectedDeleteCommand(command)
+    setIsShowDeleteCommand(true)
+  }
+
+  const deleteCommand = async () => {
+    try {
+      const deleteRes = await serverAPI.settings.customCommands.delete(guildInfo.id, selectedDeleteCommand)
+      setCustomCommands(deleteRes)
+    } catch (error) {
+    } finally {
+      setIsShowDeleteCommand(false)
+    }
+  }
+
   // Loading
   if (isLoading) {
     return (
@@ -149,13 +168,24 @@ const Home = () => {
           </Button>
           {map(customCommands, (url, command) => {
             return (
-              <div className={styles.customListInputContainer}>
-                <Input addonBefore={command} disabled value={url.toString()} />
+              <div className={styles.customListContainer}>
+                <div className={styles.customListInputContainer}>
+                  <Input addonBefore={command} disabled value={url.toString()} />
+                </div>
+                <Button onClick={showDeleteCommand(command)}>Delete</Button>
               </div>
             )
           })}
         </TabPane>
       </Tabs>
+      <Modal
+        visible={isShowDeleteCommand}
+        title="Delete Command"
+        onOk={deleteCommand}
+        onCancel={() => setIsShowDeleteCommand(false)}
+      >
+        <h3>Are you sure to delete {selectedDeleteCommand} command</h3>
+      </Modal>
       <Modal
         visible={isShowAddCustom}
         title="Add Custom Command"

@@ -104,6 +104,32 @@ const settings = (app, client) => {
       return res.status(401).send('Unauthorized')
     }
   )
+  app.post(
+    '/api/deleteCustomCommand',
+    [...discordValidator, body('id').not().isEmpty(), body('command').not().isEmpty()],
+    async (req, res) => {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        // IMPLEMENT HERE
+        // handle error here
+
+        return res.status(400).send('Bad Request')
+      }
+      try {
+        const { body, headers } = req
+        const { id, command } = body
+        const user = await discordService.getUser(headers)
+        const guild = client.guilds.cache.get(id)
+        if (checkAdmin(guild, user.id)) {
+          const customCommands = await guild.settings.get('customCommands', {})
+          delete customCommands[command]
+          const deleteRes = await guild.settings.set('customCommands', customCommands)
+          return res.json(deleteRes)
+        }
+        return res.status(401).send('Unauthorized')
+      } catch (error) {}
+    }
+  )
 }
 
 module.exports = settings

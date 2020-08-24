@@ -57,15 +57,6 @@ client.on('ready', () => {
 
   settingsAPI(app, client)
 
-  app.get('/api/test', (req, res) => {
-    // const guild = client.guilds.cache.get('317652808641806350')
-    // const { settings } = guild
-    console.log('client.provider :>> ', client.provider)
-    client.provider.set('317652808641806350', 'someThing', 'test')
-    var list = ['item1', 'item2', 'item3']
-    res.json(list)
-  })
-
   app.get('/api/userInfo', discordValidator, async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {

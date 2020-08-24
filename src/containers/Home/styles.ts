@@ -11,4 +11,8 @@ export default {
   customListInputContainer: css`
     pointer-events: none;
   `,
+  customListContainer: css`
+    display: flex;
+    flex-direction: row;
+  `,
 }

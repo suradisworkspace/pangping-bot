@@ -56,6 +56,9 @@ export default {
       add: (id: string, command: string, url: string) => {
         return axios.post('/api/addCustomCommand', { id, command, url }).then((res) => res.data)
       },
+      delete: (id: string, command: string) => {
+        return axios.post('/api/deleteCustomCommand', { id, command }).then((res) => res.data)
+      },
     },
     common: {
       editSettings: (id: string, settings: SettingsResponse) => {
