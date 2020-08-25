@@ -48,7 +48,7 @@ const Template = (props: PropsTypes) => {
     url.searchParams.append('permissions', '3147840')
     url.searchParams.append('redirect_uri', `${protocol}//${hostname}${isDevMode ? `:${port}` : ''}`)
     url.searchParams.append('scope', 'bot')
-    window.open(url.href, '_self')
+    window.open(url.href)
   }
 
   const onGuildClick = (guildId: string) => () => {
