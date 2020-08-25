@@ -76,14 +76,21 @@ const settings = (app, client) => {
       if (!errors.isEmpty()) {
         // IMPLEMENT HERE
         // handle error here
-
         return res.status(400).send('Bad Request')
       }
       const { body, headers } = req
       const user = await discordService.getUser(headers)
       const guild = client.guilds.cache.get(body.id)
-      if (!guild || !ytdl.validateURL(body.url) || body.commad.indexOf(' ') === -1) {
+      if (!guild || !ytdl.validateURL(body.url) || !body.command.indexOf(' ') === -1) {
         return res.status(400).send('Bad Request')
+      }
+      try {
+        await ytdl.getBasicInfo(body.url)
+      } catch (err) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Invalid youtube url',
+        })
       }
       if (checkAdmin(guild, user.id)) {
         const customCommands = await guild.settings.get('customCommands', {})

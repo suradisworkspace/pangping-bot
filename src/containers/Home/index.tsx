@@ -88,15 +88,20 @@ const Home = () => {
     if (!ytdl.validateURL(value)) {
       return callback([new Error('Invalid youtube url')])
     }
-    return callback
+    return callback()
   }
 
   const onAddForm = async () => {
     try {
       const { command, url } = addCustomForm.getFieldsValue()
-      await serverAPI.settings.customCommands.add(guildInfo.id, command, url)
+      const addRes = await serverAPI.settings.customCommands.add(guildInfo.id, command, url)
+      setCustomCommands(addRes)
       setIsShowAddCustom(false)
-    } catch (error) {}
+    } catch (error) {
+      if (error.response && error.response.data.status === 'error') {
+        alert(error.response.data.message)
+      }
+    }
   }
 
   const saveSettings = async () => {
@@ -158,9 +163,9 @@ const Home = () => {
             Save
           </Button>
         </TabPane>
-        <TabPane tab="Commands" key="commands">
+        {/* <TabPane tab="Commands" key="commands">
           <h2>Commands</h2>
-        </TabPane>
+        </TabPane> */}
         <TabPane tab="Custom Commands" key="customCommands">
           <h2>Custom Commands</h2>
           <Button icon={<PlusCircleFilled />} onClick={showAddCustom}>
