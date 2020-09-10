@@ -1,4 +1,19 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Required Environment Variables
+
+### REACT_APP_CLIENT_SECRET
+ 
+ The discord bot secret
+ 
+ ### REACT_APP_DISCORD_TOKEN
+ 
+ The discord bot token
+ 
+ ### REACT_APP_DB_HOST
+ 
+ Mongo db host (Not support srv)
+ 
+ ### YOUTUBE_COOKIE
+ Youtube cookies
 
 ## Available Scripts
 
