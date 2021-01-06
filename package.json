@@ -20,7 +20,7 @@
     "@types/react-router-dom": "^5.1.5",
     "@types/styled-components": "^5.1.1",
     "antd": "^4.4.3",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "commando-provider-keyv": "^2.1.0",
     "cookie-parser": "^1.4.5",
